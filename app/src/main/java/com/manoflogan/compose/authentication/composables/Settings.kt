@@ -2,8 +2,11 @@ package com.manoflogan.compose.authentication.composables
 
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -43,24 +46,32 @@ fun SettingsList(uiState: SettingsState, modifier: Modifier = Modifier) {
         modifier = Modifier, scaffoldState = scaffoldState,
         backgroundColor = MaterialTheme.colors.background,
         topBar = {
-            TopAppBar(modifier = Modifier.semantics {
-                heading()
-            }) {
+            TopAppBar(
+                modifier = Modifier.semantics {
+                    heading()
+                },
+                backgroundColor = MaterialTheme.colors.surface,
+                contentPadding = PaddingValues(start = 12.dp)
+            ) {
                 Icon(
+                    tint = MaterialTheme.colors.onSurface,
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(id = R.string.header_settings_back),
-                    modifier = Modifier.padding(end = 8.dp)
+                    contentDescription = stringResource(id = R.string.header_settings_back)
                 )
+                Spacer(modifier = modifier.width(16.dp))
                 Text(
                     text = stringResource(id = R.string.header_settings),
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colors.onSurface
                 )
             }
         }
     ) {
         val scrollState = rememberScrollState()
         Column(
-            modifier = Modifier.verticalScroll(scrollState).padding(it)
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(it)
         ) {
 
         }
