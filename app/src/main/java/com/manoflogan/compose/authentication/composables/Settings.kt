@@ -1,10 +1,11 @@
 package com.manoflogan.compose.authentication.composables
 
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -19,7 +22,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -35,13 +38,12 @@ import com.manoflogan.compose.authentication.models.SettingsState
 fun Settings() {
     val viewModel: SettingsViewModel = viewModel()
     val uiState: SettingsState = viewModel.uiState.collectAsState().value
-    SettingsList(uiState = uiState)
+    SettingsList(uiState = uiState, viewModel)
 }
 
 @Composable
-fun SettingsList(uiState: SettingsState, modifier: Modifier = Modifier) {
+fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier: Modifier = Modifier) {
     val scaffoldState = rememberScaffoldState()
-    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         modifier = Modifier, scaffoldState = scaffoldState,
         backgroundColor = MaterialTheme.colors.background,
@@ -71,9 +73,29 @@ fun SettingsList(uiState: SettingsState, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
-                .padding(it)
+                .padding(paddingValues = it)
         ) {
+            NotificationSettingsComposable(
+                stringResource(id = R.string.body_enable_notifications),
+                uiState.notificationsEnabled, {
+                    viewModel.toggleNotificationSettings()
+                },
+                modifier.fillMaxWidth()
+            )
+        }
+    }
+}
 
+@Composable
+fun NotificationSettingsComposable(title: String, checked: Boolean, onCheckedChanged: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    Surface(modifier = modifier.padding(12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+
+            Text(
+                text = title, fontSize = 16.sp,
+                color = MaterialTheme.colors.onSurface,
+            )
+            Switch(checked = checked, onCheckedChange = onCheckedChanged, modifier = Modifier.align(Alignment.Top))
         }
     }
 }
