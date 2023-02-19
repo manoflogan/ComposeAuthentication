@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -25,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -88,14 +90,21 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
 
 @Composable
 fun NotificationSettingsComposable(title: String, checked: Boolean, onCheckedChanged: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    Surface(modifier = modifier.padding(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+    Surface {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.toggleable(
+                checked, role = Role.Switch,
+                onValueChange = onCheckedChanged
+            ).padding(16.dp)
+        )  {
 
             Text(
                 text = title, fontSize = 16.sp,
                 color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.weight(1f)
             )
-            Switch(checked = checked, onCheckedChange = onCheckedChanged, modifier = Modifier.align(Alignment.Top))
+            Switch(checked = checked, onCheckedChange = null, modifier = Modifier.align(Alignment.Top))
         }
     }
 }
