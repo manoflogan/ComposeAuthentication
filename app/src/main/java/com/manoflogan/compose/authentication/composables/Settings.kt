@@ -1,16 +1,17 @@
 package com.manoflogan.compose.authentication.composables
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -77,28 +79,40 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
                 .verticalScroll(scrollState)
                 .padding(paddingValues = it)
         ) {
+            // Enable Notifications
             NotificationSettingsComposable(
-                stringResource(id = R.string.body_enable_notifications),
-                uiState.notificationsEnabled, {
-                    viewModel.toggleNotificationSettings()
-                },
+                title = stringResource(id = R.string.body_enable_notifications),
+                accessibilityString = stringResource(
+                    if (uiState.notificationsEnabled) {
+                        R.string.notifications_enabled
+                    } else {
+                        R.string.notifications_disabled
+                    }),
+                checked = uiState.notificationsEnabled,
+                onCheckedChanged =  { viewModel.toggleNotificationSettings() },
                 modifier.fillMaxWidth()
             )
+            Divider(thickness = 2.dp)
+            // Enable hint
         }
     }
 }
 
 @Composable
-fun NotificationSettingsComposable(title: String, checked: Boolean, onCheckedChanged: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    Surface {
+fun NotificationSettingsComposable(title: String, accessibilityString: String, checked: Boolean, onCheckedChanged: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    SettingsItem(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.toggleable(
-                checked, role = Role.Switch,
-                onValueChange = onCheckedChanged
-            ).padding(16.dp)
+            modifier = Modifier
+                .toggleable(
+                    checked, role = Role.Switch,
+                    onValueChange = onCheckedChanged
+                )
+                .semantics {
+                    stateDescription = accessibilityString
+                }
+                .padding(16.dp)
         )  {
-
             Text(
                 text = title, fontSize = 16.sp,
                 color = MaterialTheme.colors.onSurface,
@@ -106,5 +120,16 @@ fun NotificationSettingsComposable(title: String, checked: Boolean, onCheckedCha
             )
             Switch(checked = checked, onCheckedChange = null, modifier = Modifier.align(Alignment.Top))
         }
+    }
+}
+
+/**
+ * Common composable for settings items.
+ */
+@Composable
+fun SettingsItem(modifier: Modifier, content: @Composable ()-> Unit) {
+    Surface(modifier = modifier.heightIn(56.dp) // Maintain minimum height does not enforce a fixed height
+    ) {
+        content()
     }
 }
