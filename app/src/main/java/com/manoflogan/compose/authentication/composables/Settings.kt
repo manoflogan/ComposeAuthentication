@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -94,6 +95,14 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
             )
             Divider(thickness = 2.dp)
             // Enable hint
+            EnableHintsComposable(
+                enableHintsTitle = stringResource(id = R.string.show_hints),
+                accessibilityString = stringResource(if (uiState.enableHint) R.string.hints_enabled else R.string.hints_disabled),
+                checked = uiState.enableHint ,
+                onValueChecked = {viewModel.toggleEnableHint()},
+                modifier = Modifier.fillMaxWidth()
+            )
+            Divider(thickness = 2.dp)
         }
     }
 }
@@ -118,7 +127,28 @@ fun NotificationSettingsComposable(title: String, accessibilityString: String, c
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.weight(1f)
             )
-            Switch(checked = checked, onCheckedChange = null, modifier = Modifier.align(Alignment.Top))
+            Switch(checked = checked, onCheckedChange = null)
+        }
+    }
+}
+
+@Composable
+fun EnableHintsComposable(enableHintsTitle: String, accessibilityString: String, checked: Boolean,
+                          onValueChecked: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    SettingsItem(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .toggleable(
+                    checked, role = Role.Checkbox,
+                    onValueChange = onValueChecked
+                )
+                .semantics {
+                    stateDescription = accessibilityString
+                }
+                .padding(16.dp)
+        ) {
+           Text(text = enableHintsTitle, modifier = Modifier.weight(1f))
+           Checkbox(checked = checked, onCheckedChange = null)
         }
     }
 }

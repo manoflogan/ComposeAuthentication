@@ -8,5 +8,8 @@
     <string name="header_settings_back">Go back to the previous screen</string>
     <string name="body_enable_notifications">Enable Notifications</string>
     <string name="notifications_enabled">Notifications enabled</string>
-    <string name="notifications_disabled">Notificattitons disabled</string>
+    <string name="notifications_disabled">Notifications disabled</string>
+    <string name="show_hints">Show Hints</string>
+    <string name="hints_enabled">Hints enabled</string>
+    <string name="hints_disabled">Hints disabled</string>
 </resources>
