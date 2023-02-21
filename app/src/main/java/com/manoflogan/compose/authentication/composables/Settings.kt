@@ -1,5 +1,8 @@
 package com.manoflogan.compose.authentication.composables
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -103,10 +107,21 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
                 modifier = Modifier.fillMaxWidth()
             )
             Divider(thickness = 2.dp)
+            ManageSubscriptions(
+                title = stringResource(id = R.string.manage_subscriptions),
+                accessibilityString = stringResource(id = R.string.manage_subscriptions_accessibility),
+                onClick = {  },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Divider(thickness = 2.dp)
+            SectionSpacer(modifier = Modifier.fillMaxWidth())
         }
     }
 }
 
+/**
+ * "Enable" notifications composable.
+ */
 @Composable
 fun NotificationSettingsComposable(title: String, accessibilityString: String, checked: Boolean, onCheckedChanged: (Boolean) -> Unit, modifier: Modifier = Modifier) {
     SettingsItem(modifier = modifier) {
@@ -132,6 +147,9 @@ fun NotificationSettingsComposable(title: String, accessibilityString: String, c
     }
 }
 
+/**
+ * Enable hints composable
+ */
 @Composable
 fun EnableHintsComposable(enableHintsTitle: String, accessibilityString: String, checked: Boolean,
                           onValueChecked: (Boolean) -> Unit, modifier: Modifier = Modifier) {
@@ -154,6 +172,30 @@ fun EnableHintsComposable(enableHintsTitle: String, accessibilityString: String,
 }
 
 /**
+ * Manage subscriptions screen
+ */
+@Composable
+fun ManageSubscriptions(title: String, accessibilityString: String, onClick: () -> Unit, modifier: Modifier) {
+    SettingsItem(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .clickable(onClickLabel = accessibilityString, role = Role.Button) {
+                    onClick()
+                }
+                .padding(16.dp)
+        ) {
+            Text(text = title, modifier = modifier.weight(1f))
+            Icon(
+                tint = MaterialTheme.colors.onSurface,
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null
+            )
+        }
+    }
+}
+
+/**
  * Common composable for settings items.
  */
 @Composable
@@ -162,4 +204,11 @@ fun SettingsItem(modifier: Modifier, content: @Composable ()-> Unit) {
     ) {
         content()
     }
+}
+
+@Composable
+fun SectionSpacer(modifier: Modifier) {
+    Box(modifier = modifier
+        .heightIn(48.dp)
+        .background(MaterialTheme.colors.onSurface.copy(alpha = 0.12f)))
 }

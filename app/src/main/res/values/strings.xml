@@ -12,4 +12,6 @@
     <string name="show_hints">Show Hints</string>
     <string name="hints_enabled">Hints enabled</string>
     <string name="hints_disabled">Hints disabled</string>
+    <string name="manage_subscriptions">Manager subscriptions</string>
+    <string name="manage_subscriptions_accessibility">Open subscriptions</string>
 </resources>
