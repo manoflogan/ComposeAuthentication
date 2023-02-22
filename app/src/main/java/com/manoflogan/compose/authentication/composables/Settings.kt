@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,6 +19,7 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Switch
@@ -31,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.manoflogan.compose.authentication.R
 import com.manoflogan.compose.authentication.SettingsViewModel
+import com.manoflogan.compose.authentication.models.MarketingOption
 import com.manoflogan.compose.authentication.models.SettingsState
 
 @Composable
@@ -115,6 +119,14 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
             )
             Divider(thickness = 2.dp)
             SectionSpacer(modifier = Modifier.fillMaxWidth())
+            MarketingSettings(
+                text = stringResource(id = R.string.receive_marketing_emails),
+                selected = uiState.marketingOption,
+                onSelected = { marketingOption: MarketingOption ->
+                    viewModel.setMarketingOption(marketingOption)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -211,4 +223,28 @@ fun SectionSpacer(modifier: Modifier) {
     Box(modifier = modifier
         .heightIn(48.dp)
         .background(MaterialTheme.colors.onSurface.copy(alpha = 0.12f)))
+}
+
+@Composable
+fun MarketingSettings(text: String, selected: MarketingOption, onSelected: (MarketingOption) -> Unit, modifier: Modifier) {
+    SettingsItem(modifier = modifier) {
+        Column(modifier = modifier.padding(16.dp)) {
+            Text(text = text)
+            Spacer(modifier = Modifier.height(8.dp))
+            val options = stringArrayResource(id = R.array.settings_options_marketing_choice)
+            options.forEachIndexed {index, option ->
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                    .fillMaxWidth().padding(8.dp)
+                ) {
+                    RadioButton(selected = selected.state == index, onClick = {
+                        val marketingOption = if (selected.state == index) MarketingOption.ALLOWED else MarketingOption.NOT_ALLOWED
+                        onSelected(marketingOption)
+                    })
+                    Text(text = option, modifier= Modifier.padding(start = 16.dp))
+                }
+            }
+            
+        }
+
+    }
 }

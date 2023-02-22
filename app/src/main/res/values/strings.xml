@@ -14,4 +14,9 @@
     <string name="hints_disabled">Hints disabled</string>
     <string name="manage_subscriptions">Manager subscriptions</string>
     <string name="manage_subscriptions_accessibility">Open subscriptions</string>
+    <string name="receive_marketing_emails">Receive marketing emails?</string>
+    <string-array name="settings_options_marketing_choice">
+        <item>Opt-in for marketing emails</item>
+        <item>Don\'t send me emails</item>
+    </string-array>
 </resources>
