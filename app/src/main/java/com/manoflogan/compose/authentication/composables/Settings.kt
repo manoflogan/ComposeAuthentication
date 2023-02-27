@@ -18,6 +18,8 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
@@ -32,7 +34,12 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -40,13 +47,16 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.manoflogan.compose.authentication.R
 import com.manoflogan.compose.authentication.SettingsViewModel
 import com.manoflogan.compose.authentication.models.MarketingOption
 import com.manoflogan.compose.authentication.models.SettingsState
+import com.manoflogan.compose.authentication.models.Theme
 
 @Composable
 fun Settings() {
@@ -129,6 +139,13 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
                 modifier = Modifier.fillMaxWidth()
             )
             Divider(thickness = 2.dp)
+            Theme(
+                uiState.theme,
+                {theme ->
+                    viewModel.setTheme(theme)
+                },
+                modifier = Modifier.fillMaxWidth())
+            SectionSpacer(modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -252,8 +269,52 @@ fun MarketingSettings(text: String, selected: MarketingOption, onSelected: (Mark
                     Text(text = option, modifier= Modifier.padding(start = 16.dp))
                 }
             }
-            
         }
+    }
+}
 
+/**
+ * Theme composable
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun Theme(theme: Theme, onThemeChanged: (Theme) -> Unit, modifier: Modifier = Modifier) {
+    SettingsItem(modifier = modifier) {
+        Column {
+            var expanded by rememberSaveable { mutableStateOf(false) }
+            Row(
+                modifier = modifier
+                    .clickable(onClickLabel = stringResource(id = R.string.select_theme_accessibility)) {
+                        expanded = !expanded
+                    }
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.theme), modifier = Modifier
+                        .padding(start = 16.dp)
+                        .weight(1f)
+                )
+                Text(text = stringResource(id = theme.label))
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                },
+                offset = DpOffset(x = 16.dp, y = (-16).dp),
+                properties = PopupProperties(usePlatformDefaultWidth = true)
+            ) {
+                Theme.values().forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            onThemeChanged(it)
+                            expanded = false
+                        }
+                    ) {
+                        Text(text = stringResource(id = it.label))
+                    }
+                }
+            }
+        }
     }
 }

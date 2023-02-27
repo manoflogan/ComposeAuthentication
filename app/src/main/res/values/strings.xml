@@ -19,4 +19,6 @@
         <item>Opt-in for marketing emails</item>
         <item>Don\'t send me emails</item>
     </string-array>
+    <string name="theme">Theme</string>
+    <string name="select_theme_accessibility">Select the theme</string>
 </resources>
