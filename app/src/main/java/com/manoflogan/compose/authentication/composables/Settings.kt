@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
@@ -127,6 +128,7 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
                 },
                 modifier = Modifier.fillMaxWidth()
             )
+            Divider(thickness = 2.dp)
         }
     }
 }
@@ -236,9 +238,9 @@ fun MarketingSettings(text: String, selected: MarketingOption, onSelected: (Mark
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
-                    .clickable(
-                        role = Role.Button,
-                        onClickLabel = stringResource(id = R.string.marketing_settings_accessibility)
+                    .selectable(
+                        selected = selected.state == index,
+                        role = Role.RadioButton,
                     ) {
                         val marketingOption =
                             if (selected.state == index) MarketingOption.ALLOWED else MarketingOption.NOT_ALLOWED

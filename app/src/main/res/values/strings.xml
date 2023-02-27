@@ -19,5 +19,4 @@
         <item>Opt-in for marketing emails</item>
         <item>Don\'t send me emails</item>
     </string-array>
-    <string name="marketing_settings_accessibility">Click here to toggle the marketing settings </string>
 </resources>
