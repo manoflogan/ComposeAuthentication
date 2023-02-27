@@ -234,12 +234,19 @@ fun MarketingSettings(text: String, selected: MarketingOption, onSelected: (Mark
             val options = stringArrayResource(id = R.array.settings_options_marketing_choice)
             options.forEachIndexed {index, option ->
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                    .fillMaxWidth().padding(8.dp)
-                ) {
-                    RadioButton(selected = selected.state == index, onClick = {
-                        val marketingOption = if (selected.state == index) MarketingOption.ALLOWED else MarketingOption.NOT_ALLOWED
+                    .fillMaxWidth()
+                    .padding(12.dp)
+                    .clickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(id = R.string.marketing_settings_accessibility)
+                    ) {
+                        val marketingOption =
+                            if (selected.state == index) MarketingOption.ALLOWED else MarketingOption.NOT_ALLOWED
                         onSelected(marketingOption)
-                    })
+                    }
+                ) {
+                    RadioButton(selected = selected.state == index, onClick = null)
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(text = option, modifier= Modifier.padding(start = 16.dp))
                 }
             }
