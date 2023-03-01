@@ -146,6 +146,8 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
                 },
                 modifier = Modifier.fillMaxWidth())
             SectionSpacer(modifier = Modifier.fillMaxWidth())
+            AppVersion(appVersion = stringResource(id = R.string.settings_app_version), modifier = Modifier.fillMaxWidth())
+            Divider(thickness = 2.dp)
         }
     }
 }
@@ -315,6 +317,16 @@ fun Theme(theme: Theme, onThemeChanged: (Theme) -> Unit, modifier: Modifier = Mo
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun AppVersion(appVersion: String, modifier: Modifier) {
+    SettingsItem(modifier = modifier) {
+        Row(modifier = modifier.padding(16.dp).semantics(mergeDescendants = true) {}, verticalAlignment = Alignment.CenterVertically) {
+            Text(text = stringResource(id = R.string.app_version), modifier=Modifier.weight(1f))
+            Text(text = appVersion)
         }
     }
 }
