@@ -36,11 +36,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -50,7 +51,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.manoflogan.compose.authentication.R
 import com.manoflogan.compose.authentication.SettingsViewModel
@@ -130,21 +130,22 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
             )
             Divider(thickness = 2.dp)
             SectionSpacer(modifier = Modifier.fillMaxWidth())
-            MarketingSettings(
-                text = stringResource(id = R.string.receive_marketing_emails),
-                selected = uiState.marketingOption,
-                onSelected = { marketingOption: MarketingOption ->
+            MarketingSettingItem(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.receive_marketing_emails),
+                selectedOption = uiState.marketingOption,
+                onOptionSelected = { marketingOption: MarketingOption ->
                     viewModel.setMarketingOption(marketingOption)
                 },
-                modifier = Modifier.fillMaxWidth()
+
             )
             Divider(thickness = 2.dp)
-            Theme(
+            ThemeSettingItem(
+                modifier = Modifier.fillMaxWidth(),
                 uiState.theme,
-                {theme ->
-                    viewModel.setTheme(theme)
-                },
-                modifier = Modifier.fillMaxWidth())
+            ) { theme ->
+                viewModel.setTheme(theme)
+            }
             SectionSpacer(modifier = Modifier.fillMaxWidth())
             AppVersion(appVersion = stringResource(id = R.string.settings_app_version), modifier = Modifier.fillMaxWidth())
             Divider(thickness = 2.dp)
@@ -161,6 +162,7 @@ fun NotificationSettingsComposable(title: String, accessibilityString: String, c
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .testTag(Tags.TOGGLE_ITEMS)
                 .toggleable(
                     checked, role = Role.Switch,
                     onValueChange = onCheckedChanged
@@ -208,7 +210,8 @@ fun EnableHintsComposable(enableHintsTitle: String, accessibilityString: String,
  * Manage subscriptions screen
  */
 @Composable
-fun ManageSubscriptions(title: String, accessibilityString: String, onClick: () -> Unit, modifier: Modifier) {
+fun ManageSubscriptions(title: String, accessibilityString: String, onClick: () -> Unit,
+                        modifier: Modifier = Modifier) {
     SettingsItem(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -247,28 +250,43 @@ fun SectionSpacer(modifier: Modifier) {
 }
 
 @Composable
-fun MarketingSettings(text: String, selected: MarketingOption, onSelected: (MarketingOption) -> Unit, modifier: Modifier) {
+fun MarketingSettingItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    selectedOption: MarketingOption,
+    onOptionSelected: (option: MarketingOption) -> Unit
+) {
     SettingsItem(modifier = modifier) {
-        Column(modifier = modifier.padding(16.dp)) {
-            Text(text = text)
+        val options = stringArrayResource(id = R.array.settings_options_marketing_choice)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = title)
             Spacer(modifier = Modifier.height(8.dp))
-            val options = stringArrayResource(id = R.array.settings_options_marketing_choice)
-            options.forEachIndexed {index, option ->
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-                    .selectable(
-                        selected = selected.state == index,
-                        role = Role.RadioButton,
-                    ) {
-                        val marketingOption =
-                            if (selected.state == index) MarketingOption.ALLOWED else MarketingOption.NOT_ALLOWED
-                        onSelected(marketingOption)
-                    }
+            options.forEachIndexed { index, option ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = selectedOption.state == index,
+                            onClick ={
+                                val marketingOption = if (
+                                    index == MarketingOption.ALLOWED.state
+                                ) {
+                                    MarketingOption.ALLOWED
+                                } else MarketingOption.NOT_ALLOWED
+                                onOptionSelected(marketingOption)
+                            },
+                            role = Role.RadioButton
+                        )
+                        .padding(10.dp)
+                        .testTag(Tags.TAG_MARKETING_OPTION + index),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(selected = selected.state == index, onClick = null)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = option, modifier= Modifier.padding(start = 16.dp))
+                    RadioButton(
+                        selected = selectedOption.state == index,
+                        onClick = null
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(text = option)
                 }
             }
         }
@@ -280,41 +298,49 @@ fun MarketingSettings(text: String, selected: MarketingOption, onSelected: (Mark
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun Theme(theme: Theme, onThemeChanged: (Theme) -> Unit, modifier: Modifier = Modifier) {
+fun ThemeSettingItem(
+    modifier: Modifier = Modifier,
+    selectedTheme: Theme,
+    onThemeSelected: (theme: Theme) -> Unit
+) {
     SettingsItem(modifier = modifier) {
-        Column {
-            var expanded by rememberSaveable { mutableStateOf(false) }
-            Row(
-                modifier = modifier
-                    .clickable(onClickLabel = stringResource(id = R.string.select_theme_accessibility)) {
-                        expanded = !expanded
-                    }
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.theme), modifier = Modifier
-                        .padding(start = 16.dp)
-                        .weight(1f)
-                )
-                Text(text = stringResource(id = theme.label))
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = {
-                    expanded = false
-                },
-                offset = DpOffset(x = 16.dp, y = (-16).dp),
-                properties = PopupProperties(usePlatformDefaultWidth = true)
-            ) {
-                Theme.values().forEach {
-                    DropdownMenuItem(
-                        onClick = {
-                            onThemeChanged(it)
-                            expanded = false
-                        }
-                    ) {
-                        Text(text = stringResource(id = it.label))
-                    }
+        var expanded by remember { mutableStateOf(false) }
+        Row(
+            modifier = Modifier
+                .clickable(
+                    onClickLabel = stringResource(id = R.string.theme)
+                ) {
+                    expanded = !expanded
+                }
+                .padding(16.dp)
+                .testTag(Tags.TAG_SELECT_THEME),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.theme)
+            )
+            Text(
+                modifier = Modifier.testTag(Tags.TAG_THEME),
+                text = stringResource(id = selectedTheme.label)
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            },
+            offset = DpOffset(16.dp, 0.dp)
+        ) {
+            Theme.values().forEach { theme ->
+                val themeLabel = stringResource(id = theme.label)
+                DropdownMenuItem(
+                    modifier = Modifier.testTag(Tags.TAG_THEME_OPTION + themeLabel),
+                    onClick = {
+                        onThemeSelected(theme)
+                        expanded = false
+                    }) {
+                    Text(text = themeLabel)
                 }
             }
         }
@@ -322,9 +348,11 @@ fun Theme(theme: Theme, onThemeChanged: (Theme) -> Unit, modifier: Modifier = Mo
 }
 
 @Composable
-fun AppVersion(appVersion: String, modifier: Modifier) {
+fun AppVersion(appVersion: String, modifier: Modifier = Modifier) {
     SettingsItem(modifier = modifier) {
-        Row(modifier = modifier.padding(16.dp).semantics(mergeDescendants = true) {}, verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = modifier
+            .padding(16.dp)
+            .semantics(mergeDescendants = true) {}, verticalAlignment = Alignment.CenterVertically) {
             Text(text = stringResource(id = R.string.app_version), modifier=Modifier.weight(1f))
             Text(text = appVersion)
         }
