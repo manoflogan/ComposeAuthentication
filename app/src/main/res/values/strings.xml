@@ -23,4 +23,7 @@
     <string name="select_theme_accessibility">Select the theme</string>
     <string name="app_version">App Version</string>
     <string name="settings_app_version">1.1.0</string>
+    <string name="password_requirement_characters">At least 8 characters</string>
+    <string name="password_requirement_capital">At least 1 upper-case letter</string>
+    <string name="password_requirement_digit">At least 1 digit</string>
 </resources>
