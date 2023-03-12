@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -26,8 +28,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -57,33 +62,40 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
         Spacer(modifier = Modifier.height(32.dp))
         AuthenticationTitle(modifier = modifier.fillMaxWidth(), authenticationState.authenticationMode)
         Spacer(modifier = Modifier.height(48.dp))
-        AuthenticationForm(modifier, authenticationState, onEmailChanged = {
-            handleEvent(AuthenticationEvent.EmailChangedEvent(it))
-        }) {
-            handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
-        }
+        AuthenticationForm(
+            modifier, authenticationState, onEmailChanged = {
+                handleEvent(AuthenticationEvent.EmailChangedEvent(it))
+            },
+            {
+                handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
+            }) { handleEvent(AuthenticationEvent.Authenticate) }
     }
 }
 
 
 @Composable
 fun AuthenticationForm(modifier: Modifier = Modifier, authenticationState: AuthenticationState,
-                       onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit) {
+                       onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onDoneClicked: () -> Unit) {
 
     Card(modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = 32.dp), elevation = 4.dp
     ) {
         Column(modifier = modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            EmailInput(modifier = Modifier.fillMaxWidth(), authenticationState.email ?: "", onEmailChanged)
-            PasswordInput(modifier = Modifier.fillMaxWidth(), password = authenticationState.password ?: "", onPasswordChanged)
+            val passwordRequester =  rememberSaveable { FocusRequester() }
+            EmailInput(modifier = Modifier.fillMaxWidth(), authenticationState.email ?: "", onEmailChanged) {
+                passwordRequester.requestFocus()
+            }
+            PasswordInput(modifier = Modifier.fillMaxWidth(), password = authenticationState.password ?: "", onPasswordChanged,
+                onDoneClicked
+            )
         }
     }
 
 }
 
 @Composable
-fun EmailInput(modifier: Modifier, email: String, onEmailChanged: (String) -> Unit) {
+fun EmailInput(modifier: Modifier, email: String, onEmailChanged: (String) -> Unit, onNext: () -> Unit) {
     TextField(
         modifier = modifier,
         value = email,
@@ -99,11 +111,19 @@ fun EmailInput(modifier: Modifier, email: String, onEmailChanged: (String) -> Un
             Icon(imageVector = Icons.Default.Email, contentDescription = null)
         },
         singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Next, keyboardType = KeyboardType.Email
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = {
+                onNext()
+            }
+        )
     )
 }
 
 @Composable
-fun PasswordInput(modifier: Modifier, password: String, onPasswordChanged: (String) -> Unit) {
+fun PasswordInput(modifier: Modifier, password: String, onPasswordChanged: (String) -> Unit, onDone: () -> Unit) {
     var isPasswordHidden by rememberSaveable { mutableStateOf(false) }
     TextField(
         modifier = modifier,
@@ -146,7 +166,16 @@ fun PasswordInput(modifier: Modifier, password: String, onPasswordChanged: (Stri
             PasswordVisualTransformation()
         } else {
             VisualTransformation.None
-        }
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Password
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onDone()
+            }
+        )
     )
 }
 
