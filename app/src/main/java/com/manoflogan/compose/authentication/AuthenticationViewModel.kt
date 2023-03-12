@@ -44,6 +44,13 @@ class AuthenticationViewModel: ViewModel() {
         )
     }
 
+    private fun authenticate() {
+        _authenticationStateFlow.value = _authenticationStateFlow.value.copy(
+            isLoading =  true
+        )
+        // Trigger netwok call.
+    }
+
     fun handleAuthenticationEvent(authenticationEvent: AuthenticationEvent) {
         if (authenticationEvent is AuthenticationEvent.ToggleAuthenticationEvent) {
             toggleAuthenticationMode()
@@ -51,6 +58,8 @@ class AuthenticationViewModel: ViewModel() {
             updateEmail(authenticationEvent.email)
         } else if (authenticationEvent is AuthenticationEvent.PasswordChangedEvent) {
             updatePassword(authenticationEvent.password)
+        } else if (authenticationEvent is AuthenticationEvent.Authenticate) {
+            authenticate()
         }
     }
 }
