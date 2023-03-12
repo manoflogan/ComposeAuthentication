@@ -1,12 +1,15 @@
 package com.manoflogan.compose.authentication
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
 import com.manoflogan.compose.authentication.models.PasswordRequirements
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class AuthenticationViewModel: ViewModel() {
 
@@ -49,6 +52,19 @@ class AuthenticationViewModel: ViewModel() {
             isLoading =  true
         )
         // Trigger netwok call.
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(2000)
+            _authenticationStateFlow.value = _authenticationStateFlow.value.copy(
+                isLoading = false,
+                error = "Something went wrong"
+            )
+        }
+    }
+
+    private fun dismissError() {
+        _authenticationStateFlow.value = _authenticationStateFlow.value.copy(
+            error = null
+        )
     }
 
     fun handleAuthenticationEvent(authenticationEvent: AuthenticationEvent) {
@@ -60,6 +76,8 @@ class AuthenticationViewModel: ViewModel() {
             updatePassword(authenticationEvent.password)
         } else if (authenticationEvent is AuthenticationEvent.Authenticate) {
             authenticate()
+        } else if (authenticationEvent is AuthenticationEvent.ErrorDismissed) {
+            dismissError()
         }
     }
 }
