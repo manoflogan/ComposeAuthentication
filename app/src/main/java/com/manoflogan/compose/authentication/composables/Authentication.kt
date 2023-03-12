@@ -57,25 +57,26 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
         Spacer(modifier = Modifier.height(32.dp))
         AuthenticationTitle(modifier = modifier.fillMaxWidth(), authenticationState.authenticationMode)
         Spacer(modifier = Modifier.height(48.dp))
-        AuthenticationForm(modifier, authenticationState, handleEvent)
+        AuthenticationForm(modifier, authenticationState, onEmailChanged = {
+            handleEvent(AuthenticationEvent.EmailChangedEvent(it))
+        }) {
+            handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
+        }
     }
 }
 
 
 @Composable
 fun AuthenticationForm(modifier: Modifier = Modifier, authenticationState: AuthenticationState,
-                       handleEvent: (AuthenticationEvent) -> Unit) {
+                       onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit) {
 
     Card(modifier = modifier
         .fillMaxWidth()
-        .padding(horizontal = 32.dp), elevation = 4.dp) {
+        .padding(horizontal = 32.dp), elevation = 4.dp
+    ) {
         Column(modifier = modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            EmailInput(modifier = Modifier.fillMaxWidth(), authenticationState.email ?: "") {
-                handleEvent(AuthenticationEvent.EmailChangedEvent(it))
-            }
-            PasswordInput(modifier = Modifier.fillMaxWidth(), password = authenticationState.password ?: "") {
-                handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
-            }
+            EmailInput(modifier = Modifier.fillMaxWidth(), authenticationState.email ?: "", onEmailChanged)
+            PasswordInput(modifier = Modifier.fillMaxWidth(), password = authenticationState.password ?: "", onPasswordChanged)
         }
     }
 
