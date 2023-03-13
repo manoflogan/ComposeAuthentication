@@ -4,18 +4,23 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
@@ -30,6 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +52,7 @@ import com.manoflogan.compose.authentication.AuthenticationViewModel
 import com.manoflogan.compose.authentication.R
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
+import com.manoflogan.compose.authentication.models.PasswordRequirements
 
 @Composable
 fun Authentication() {
@@ -63,19 +73,25 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
         AuthenticationTitle(modifier = modifier.fillMaxWidth(), authenticationState.authenticationMode)
         Spacer(modifier = Modifier.height(48.dp))
         AuthenticationForm(
-            modifier, authenticationState, onEmailChanged = {
+            modifier, authenticationState.email ?: "", onEmailChanged = {
                 handleEvent(AuthenticationEvent.EmailChangedEvent(it))
-            },
+            }, authenticationState.password ?: "",
             {
                 handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
-            }) { handleEvent(AuthenticationEvent.Authenticate) }
+            },
+            { handleEvent(AuthenticationEvent.Authenticate) },
+            authenticationState.passwordRequirements,
+            authenticationState.authenticationMode
+        )
     }
 }
 
 
 @Composable
-fun AuthenticationForm(modifier: Modifier = Modifier, authenticationState: AuthenticationState,
-                       onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onDoneClicked: () -> Unit) {
+fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChanged: (String) -> Unit,
+                       password: String, onPasswordChanged: (String) -> Unit, onDoneClicked: () -> Unit,
+                       completedPasswordRequirements: List<PasswordRequirements>, authenticationMode: AuthenticationMode
+) {
 
     Card(modifier = modifier
         .fillMaxWidth()
@@ -83,12 +99,19 @@ fun AuthenticationForm(modifier: Modifier = Modifier, authenticationState: Authe
     ) {
         Column(modifier = modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             val passwordRequester =  rememberSaveable { FocusRequester() }
-            EmailInput(modifier = Modifier.fillMaxWidth(), authenticationState.email ?: "", onEmailChanged) {
+            EmailInput(modifier = Modifier.fillMaxWidth(), email, onEmailChanged) {
                 passwordRequester.requestFocus()
             }
-            PasswordInput(modifier = Modifier.fillMaxWidth(), password = authenticationState.password ?: "", onPasswordChanged,
+            PasswordInput(modifier = Modifier.fillMaxWidth(), password = password, onPasswordChanged,
                 onDoneClicked
             )
+            // Show only when the users are using the sign in route.
+            AnimatedVisibility(visible = authenticationMode == AuthenticationMode.SIGN_IN) {
+                PasswordRequirements(
+                    modifier = Modifier.fillMaxWidth(),
+                    passwordRequirements = completedPasswordRequirements
+                )
+            }
         }
     }
 
@@ -192,4 +215,46 @@ fun AuthenticationTitle(modifier: Modifier, authenticationMode: AuthenticationMo
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     )
+}
+
+@Composable
+fun Requirement(modifier: Modifier, message: String, isSatisfied: Boolean) {
+    val passwordStatus = stringResource(id =if (isSatisfied)  {
+            R.string.password_requirements_satisfied
+        } else {
+            R.string.password_requirements_unsatisfied
+        }
+    )
+    Row(
+        modifier = modifier
+            .padding(6.dp)
+            .semantics(
+                mergeDescendants = true
+            ) {
+                text = AnnotatedString(passwordStatus)
+            }, verticalAlignment = Alignment.CenterVertically
+    ) {
+        val tint = if (isSatisfied) {
+            MaterialTheme.colors.onSurface
+        } else {
+            MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
+        }
+        Icon(
+            modifier = modifier.size(12.dp), imageVector = Icons.Default.Check,
+            contentDescription =  null, tint = tint
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(modifier = Modifier.clearAndSetSemantics {  }, text = message, fontSize = 12.sp, color = tint)
+    }
+}
+
+@Composable
+fun PasswordRequirements(modifier: Modifier, passwordRequirements: List<PasswordRequirements>) {
+    PasswordRequirements.values().forEach {
+        Requirement(
+            modifier = modifier,
+            message = stringResource(id = it.stringResource),
+            isSatisfied = passwordRequirements.contains(it)
+        )
+    }
 }
