@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -81,7 +83,11 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
             },
             { handleEvent(AuthenticationEvent.Authenticate) },
             authenticationState.passwordRequirements,
-            authenticationState.authenticationMode
+            authenticationState.authenticationMode,
+            {
+                handleEvent(AuthenticationEvent.Authenticate)
+            },
+            authenticationState.isFormValid()
         )
     }
 }
@@ -90,7 +96,9 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
 @Composable
 fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChanged: (String) -> Unit,
                        password: String, onPasswordChanged: (String) -> Unit, onDoneClicked: () -> Unit,
-                       completedPasswordRequirements: List<PasswordRequirements>, authenticationMode: AuthenticationMode
+                       completedPasswordRequirements: List<PasswordRequirements>,
+                       authenticationMode: AuthenticationMode, onSignIn: () -> Unit,
+                       isAuthenticationEnabled: Boolean
 ) {
 
     Card(modifier = modifier
@@ -112,6 +120,9 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
                     passwordRequirements = completedPasswordRequirements
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            AuthenticationButton(modifier = modifier, authenticationMode = authenticationMode,
+                isAuthenticationEnabled, onSignIn)
         }
     }
 
@@ -255,6 +266,27 @@ fun PasswordRequirements(modifier: Modifier, passwordRequirements: List<Password
             modifier = modifier,
             message = stringResource(id = it.stringResource),
             isSatisfied = passwordRequirements.contains(it)
+        )
+    }
+}
+
+@Composable
+fun AuthenticationButton(modifier: Modifier, authenticationMode: AuthenticationMode, isEnabled: Boolean,
+                         onClick: () -> Unit,) {
+    Button(
+        modifier = modifier.wrapContentSize(align = Alignment.Center), enabled = isEnabled,
+        onClick = onClick
+    ) {
+        Text(
+            text = stringResource(
+                if (authenticationMode == AuthenticationMode.SIGN_IN) {
+                    R.string.sign_in
+                } else {
+                    R.string.sign_in
+                }
+            ),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
