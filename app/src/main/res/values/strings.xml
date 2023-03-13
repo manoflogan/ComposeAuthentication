@@ -38,4 +38,6 @@
     <string name="sign_in">Sign In</string>
     <string name="need_account">Need an account?</string>
     <string name="have_account">Have an account</string>
+    <string name="error_title">Whoops</string>
+    <string name="error_ok">Ok</string>
 </resources>

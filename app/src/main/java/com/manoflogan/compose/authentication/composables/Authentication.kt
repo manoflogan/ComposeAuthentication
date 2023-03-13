@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -95,6 +96,11 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
                 handleEvent(AuthenticationEvent.ToggleAuthenticationEvent)
             }
         )
+        authenticationState.error?.let {
+            AuthenticationErrorDialog(modifier = modifier, error = it, onDismiss = {
+                handleEvent(AuthenticationEvent.ErrorDismissed)
+            })
+        }
     }
 }
 
@@ -318,4 +324,24 @@ fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: Authenticat
             )
         }
     }
+}
+
+@Composable
+fun AuthenticationErrorDialog(modifier: Modifier, error: String, onDismiss: () -> Unit) {
+    AlertDialog(modifier = modifier,
+        onDismissRequest = {
+            onDismiss()
+        },
+        title = {
+            Text(stringResource(id = R.string.error_title), fontSize = 18.sp)
+        },
+        text = {
+            Text(error)
+        },
+        confirmButton = {
+            TextButton(onClick = { onDismiss()  }) {
+                Text(text = stringResource(id = R.string.error_ok))
+            }
+        }
+    )
 }
