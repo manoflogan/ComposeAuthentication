@@ -1,6 +1,7 @@
 package com.manoflogan.compose.authentication.composables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,9 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -87,7 +90,10 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
             {
                 handleEvent(AuthenticationEvent.Authenticate)
             },
-            authenticationState.isFormValid()
+            authenticationState.isFormValid(),
+            {
+                handleEvent(AuthenticationEvent.ToggleAuthenticationEvent)
+            }
         )
     }
 }
@@ -98,7 +104,7 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
                        password: String, onPasswordChanged: (String) -> Unit, onDoneClicked: () -> Unit,
                        completedPasswordRequirements: List<PasswordRequirements>,
                        authenticationMode: AuthenticationMode, onSignIn: () -> Unit,
-                       isAuthenticationEnabled: Boolean
+                       isAuthenticationEnabled: Boolean, onToggleAuthenticationMode: () -> Unit
 ) {
 
     Card(modifier = modifier
@@ -123,6 +129,9 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
             Spacer(modifier = Modifier.height(12.dp))
             AuthenticationButton(modifier = modifier, authenticationMode = authenticationMode,
                 isAuthenticationEnabled, onSignIn)
+            // To occupy the space so that the authentication toggle goes to the bottom.
+            Spacer(modifier = modifier.weight(1f))
+            ToggleAuthenticationMode(modifier = modifier, authenticationMode = authenticationMode, onToggleAuthenticationMode)
         }
     }
 
@@ -288,5 +297,25 @@ fun AuthenticationButton(modifier: Modifier, authenticationMode: AuthenticationM
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: AuthenticationMode, onToggleAuthenticationMode: () -> Unit) {
+    Surface(modifier = modifier.padding(top = 8.dp), elevation = 8.dp) {
+        TextButton(modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .padding(8.dp),
+            onClick = onToggleAuthenticationMode) {
+            Text(
+                text = stringResource(
+                    if (authenticationMode == AuthenticationMode.SIGN_IN) {
+                        R.string.need_account
+                    } else {
+                        R.string.have_account
+                    }
+                )
+            )
+        }
     }
 }

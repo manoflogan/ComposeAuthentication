@@ -36,4 +36,6 @@
     <string name="password_requirements_unsatisfied">Password requirements unsatisfied</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_in">Sign In</string>
+    <string name="need_account">Need an account?</string>
+    <string name="have_account">Have an account</string>
 </resources>
