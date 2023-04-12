@@ -1,18 +1,16 @@
 package com.manoflogan.compose.authentication.composables
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -35,11 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
@@ -71,35 +71,43 @@ fun Authentication() {
 @Composable
 fun AuthenticationContent(modifier: Modifier, authenticationState: AuthenticationState,
                           handleEvent: (AuthenticationEvent) -> Unit) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        AnimatedVisibility(visible = authenticationState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier)
-        }
-        Spacer(modifier = Modifier.height(32.dp))
-        AuthenticationTitle(modifier = modifier.fillMaxWidth(), authenticationState.authenticationMode)
-        Spacer(modifier = Modifier.height(48.dp))
-        AuthenticationForm(
-            modifier, authenticationState.email ?: "", onEmailChanged = {
-                handleEvent(AuthenticationEvent.EmailChangedEvent(it))
-            }, authenticationState.password ?: "",
-            {
-                handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
-            },
-            { handleEvent(AuthenticationEvent.Authenticate) },
-            authenticationState.passwordRequirements,
-            authenticationState.authenticationMode,
-            {
-                handleEvent(AuthenticationEvent.Authenticate)
-            },
-            authenticationState.isFormValid(),
-            {
-                handleEvent(AuthenticationEvent.ToggleAuthenticationEvent)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        if (authenticationState.isLoading) {
+            CircularProgressIndicator()
+        } else {
+            AuthenticationForm(
+                modifier = Modifier.fillMaxSize(),
+                authenticationState.email ?: "",
+                {
+                    handleEvent(AuthenticationEvent.EmailChangedEvent(it))
+                },
+                authenticationState.password ?: "",
+                {
+                    handleEvent(AuthenticationEvent.PasswordChangedEvent(it))
+                },
+                {
+                    handleEvent(AuthenticationEvent.Authenticate)
+                },
+                authenticationState.passwordRequirements,
+                authenticationState.authenticationMode,
+                {
+                    handleEvent(AuthenticationEvent.Authenticate)
+                },
+
+                authenticationState.isFormValid(),
+                {
+                    handleEvent(AuthenticationEvent.ToggleAuthenticationEvent)
+                }
+            )
+            authenticationState.error?.let { error ->
+                AuthenticationErrorDialog(
+                    modifier,
+                    error = error,
+                    onDismiss = {
+                        handleEvent(AuthenticationEvent.ErrorDismissed)
+                    }
+                )
             }
-        )
-        authenticationState.error?.let {
-            AuthenticationErrorDialog(modifier = modifier, error = it, onDismiss = {
-                handleEvent(AuthenticationEvent.ErrorDismissed)
-            })
         }
     }
 }
@@ -112,35 +120,37 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
                        authenticationMode: AuthenticationMode, onSignIn: () -> Unit,
                        isAuthenticationEnabled: Boolean, onToggleAuthenticationMode: () -> Unit
 ) {
-
-    Card(modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 32.dp), elevation = 4.dp
-    ) {
-        Column(modifier = modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            val passwordRequester =  rememberSaveable { FocusRequester() }
-            EmailInput(modifier = Modifier.fillMaxWidth(), email, onEmailChanged) {
-                passwordRequester.requestFocus()
-            }
-            PasswordInput(modifier = Modifier.fillMaxWidth(), password = password, onPasswordChanged,
-                onDoneClicked
-            )
-            // Show only when the users are using the sign in route.
-            AnimatedVisibility(visible = authenticationMode == AuthenticationMode.SIGN_IN) {
-                PasswordRequirements(
-                    modifier = Modifier.fillMaxWidth(),
-                    passwordRequirements = completedPasswordRequirements
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.height(32.dp))
+        AuthenticationTitle(Modifier, authenticationMode = authenticationMode)
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp), elevation = 4.dp
+        ) {
+            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                val passwordRequester =  remember { FocusRequester() }
+                EmailInput(modifier = Modifier.fillMaxWidth(), email, onEmailChanged) {
+                    passwordRequester.requestFocus()
+                }
+                PasswordInput(modifier = Modifier.fillMaxWidth(), password = password, onPasswordChanged,
+                    onDoneClicked
                 )
+                // Show only when the users are using the sign in route.
+                if(authenticationMode == AuthenticationMode.SIGN_IN) {
+                    PasswordRequirements(
+                        modifier = Modifier.fillMaxWidth(),
+                        passwordRequirements = completedPasswordRequirements
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                AuthenticationButton(authenticationMode = authenticationMode,
+                    isEnabled = isAuthenticationEnabled, onClick = onSignIn)
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            AuthenticationButton(modifier = modifier, authenticationMode = authenticationMode,
-                isAuthenticationEnabled, onSignIn)
-            // To occupy the space so that the authentication toggle goes to the bottom.
-            Spacer(modifier = modifier.weight(1f))
-            ToggleAuthenticationMode(modifier = modifier, authenticationMode = authenticationMode, onToggleAuthenticationMode)
         }
+        // To occupy the space so that the authentication toggle goes to the bottom.
+        Spacer(modifier = Modifier.weight(1f))
+        ToggleAuthenticationMode(modifier = Modifier.fillMaxWidth(), authenticationMode = authenticationMode, onToggleAuthenticationMode)
     }
-
 }
 
 @Composable
@@ -244,7 +254,7 @@ fun AuthenticationTitle(modifier: Modifier, authenticationMode: AuthenticationMo
 }
 
 @Composable
-fun Requirement(modifier: Modifier, message: String, isSatisfied: Boolean) {
+fun Requirement(modifier: Modifier = Modifier, message: String, isSatisfied: Boolean) {
     val passwordStatus = stringResource(id =if (isSatisfied)  {
             R.string.password_requirements_satisfied
         } else {
@@ -276,20 +286,21 @@ fun Requirement(modifier: Modifier, message: String, isSatisfied: Boolean) {
 
 @Composable
 fun PasswordRequirements(modifier: Modifier, passwordRequirements: List<PasswordRequirements>) {
-    PasswordRequirements.values().forEach {
-        Requirement(
-            modifier = modifier,
-            message = stringResource(id = it.stringResource),
-            isSatisfied = passwordRequirements.contains(it)
-        )
+    Column(modifier = modifier) {
+        PasswordRequirements.values().forEach {
+            Requirement(
+                message = stringResource(id = it.stringResource),
+                isSatisfied = passwordRequirements.contains(it)
+            )
+        }
     }
 }
 
 @Composable
-fun AuthenticationButton(modifier: Modifier, authenticationMode: AuthenticationMode, isEnabled: Boolean,
+fun AuthenticationButton(modifier: Modifier = Modifier, authenticationMode: AuthenticationMode, isEnabled: Boolean,
                          onClick: () -> Unit,) {
     Button(
-        modifier = modifier.wrapContentSize(align = Alignment.Center), enabled = isEnabled,
+        modifier = modifier.testTag(Tags.TAG_AUTHENTICATE_BUTTON), enabled = isEnabled,
         onClick = onClick
     ) {
         Text(
@@ -308,11 +319,12 @@ fun AuthenticationButton(modifier: Modifier, authenticationMode: AuthenticationM
 
 @Composable
 fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: AuthenticationMode, onToggleAuthenticationMode: () -> Unit) {
-    Surface(modifier = modifier.padding(top = 8.dp), elevation = 8.dp) {
+    Surface(modifier = modifier) {
         TextButton(modifier = Modifier
             .background(MaterialTheme.colors.surface)
             .padding(8.dp),
-            onClick = onToggleAuthenticationMode) {
+            onClick = onToggleAuthenticationMode
+        ) {
             Text(
                 text = stringResource(
                     if (authenticationMode == AuthenticationMode.SIGN_IN) {

@@ -1,7 +1,7 @@
 package com.manoflogan.compose.authentication.composables
 
 object Tags {
-
+    const val TAG_AUTHENTICATE_BUTTON = "authenticate_button"
     const val TOGGLE_ITEMS = "toggleItems"
     const val TAG_THEME = "theme"
     const val TAG_MARKETING_OPTION = "marketing_option_"

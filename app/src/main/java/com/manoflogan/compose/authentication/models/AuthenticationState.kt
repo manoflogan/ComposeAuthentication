@@ -6,7 +6,7 @@ data class AuthenticationState(
     val password: String? = null,
     val passwordRequirements: List<PasswordRequirements> = emptyList(),
     // Progress state
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     // Error state
     val error: String? = null
 ) {
