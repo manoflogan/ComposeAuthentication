@@ -22,7 +22,7 @@ class AuthenticationViewModel: ViewModel() {
             if (authenticationState.authenticationMode == AuthenticationMode.SIGN_IN) {
                 AuthenticationMode.SIGN_UP
             } else {
-                AuthenticationMode.SIGN_UP
+                AuthenticationMode.SIGN_IN
             }
         _authenticationStateFlow.value =
             _authenticationStateFlow.value.copy(authenticationMode = toggledAuthenticationMode)

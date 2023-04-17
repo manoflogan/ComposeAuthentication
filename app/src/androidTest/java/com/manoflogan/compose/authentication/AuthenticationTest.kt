@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import com.manoflogan.compose.authentication.composables.Authentication
 import com.manoflogan.compose.authentication.ui.theme.JetpackComposeAuthenticationTheme
@@ -41,6 +43,21 @@ class AuthenticationTest {
         }
         composeRule.run {
             onNodeWithText(context.getString(R.string.need_account)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun testUser_Account_SignUp_Displayed_After_Toggling() {
+        composeRule.setContent {
+            Authentication()
+        }
+        composeRule.run {
+            onNodeWithText(context.getString(R.string.need_account)).assertIsDisplayed().performClick()
+            waitUntil {
+                onAllNodesWithText(context.getString(R.string.have_account)).fetchSemanticsNodes()
+                    .isNotEmpty()
+            }
+            onNodeWithText(context.getString(R.string.have_account)).assertIsDisplayed()
         }
     }
 }
