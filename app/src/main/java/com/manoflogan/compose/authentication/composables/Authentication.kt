@@ -308,7 +308,7 @@ fun AuthenticationButton(modifier: Modifier = Modifier, authenticationMode: Auth
                 if (authenticationMode == AuthenticationMode.SIGN_IN) {
                     R.string.sign_in
                 } else {
-                    R.string.sign_in
+                    R.string.sign_up
                 }
             ),
             fontSize = 16.sp,
@@ -320,7 +320,7 @@ fun AuthenticationButton(modifier: Modifier = Modifier, authenticationMode: Auth
 @Composable
 fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: AuthenticationMode, onToggleAuthenticationMode: () -> Unit) {
     Surface(modifier = modifier) {
-        TextButton(modifier = Modifier
+        TextButton(modifier = Modifier.testTag(Tags.TAG_AUTHENTICATION_TOGGLE)
             .background(MaterialTheme.colors.surface)
             .padding(8.dp),
             onClick = onToggleAuthenticationMode
