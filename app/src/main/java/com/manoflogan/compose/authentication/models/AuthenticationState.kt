@@ -16,7 +16,7 @@ data class AuthenticationState(
      */
     fun isFormValid(): Boolean =
         !email.isNullOrEmpty() && !password.isNullOrEmpty() &&
-                (authenticationMode == AuthenticationMode.SIGN_IN ||
+                (authenticationMode == AuthenticationMode.SIGN_IN &&
                         passwordRequirements.containsAll(PasswordRequirements.values().toList())
                 )
 

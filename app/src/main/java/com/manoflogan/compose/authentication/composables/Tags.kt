@@ -8,4 +8,7 @@ object Tags {
     const val TAG_MARKETING_OPTION = "marketing_option_"
     const val TAG_SELECT_THEME = "select_theme"
     const val TAG_THEME_OPTION = "theme_"
+    const val TAG_INPUT_EMAIL = "input_email"
+    const val TAG_INPUT_PASSWORD = "input_password"
+    const val TAG_ERROR_ALERT = "error_alert"
 }

@@ -93,7 +93,6 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
                 {
                     handleEvent(AuthenticationEvent.Authenticate)
                 },
-
                 authenticationState.isFormValid(),
                 {
                     handleEvent(AuthenticationEvent.ToggleAuthenticationEvent)
@@ -156,7 +155,7 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
 @Composable
 fun EmailInput(modifier: Modifier, email: String, onEmailChanged: (String) -> Unit, onNext: () -> Unit) {
     TextField(
-        modifier = modifier,
+        modifier = modifier.testTag(Tags.TAG_INPUT_EMAIL),
         value = email,
         onValueChange = {
             onEmailChanged(it)
@@ -185,7 +184,7 @@ fun EmailInput(modifier: Modifier, email: String, onEmailChanged: (String) -> Un
 fun PasswordInput(modifier: Modifier, password: String, onPasswordChanged: (String) -> Unit, onDone: () -> Unit) {
     var isPasswordHidden by rememberSaveable { mutableStateOf(false) }
     TextField(
-        modifier = modifier,
+        modifier = modifier.testTag(Tags.TAG_INPUT_PASSWORD),
         value = password,
         onValueChange = {
             onPasswordChanged(it)
@@ -340,7 +339,8 @@ fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: Authenticat
 
 @Composable
 fun AuthenticationErrorDialog(modifier: Modifier, error: String, onDismiss: () -> Unit) {
-    AlertDialog(modifier = modifier,
+    AlertDialog(
+        modifier = modifier.testTag(Tags.TAG_ERROR_ALERT),
         onDismissRequest = {
             onDismiss()
         },
