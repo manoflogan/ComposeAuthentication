@@ -1,6 +1,7 @@
 package com.manoflogan.compose.authentication
 
 import android.content.Context
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -16,7 +17,10 @@ import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import com.manoflogan.compose.authentication.composables.Authentication
+import com.manoflogan.compose.authentication.composables.AuthenticationContent
+import com.manoflogan.compose.authentication.composables.AuthenticationForm
 import com.manoflogan.compose.authentication.composables.Tags
+import com.manoflogan.compose.authentication.models.AuthenticationState
 import com.manoflogan.compose.authentication.ui.theme.JetpackComposeAuthenticationTheme
 import org.junit.Before
 import org.junit.Rule
@@ -119,7 +123,62 @@ class AuthenticationTest {
             Authentication()
         }
         composeRule.run {
-            onNodeWithTag(Tags.TAG_ERROR_ALERT, useUnmergedTree = true).assertDoesNotExist()
+            onNodeWithTag(Tags.TAG_ERROR_ALERT).assertDoesNotExist()
+        }
+    }
+
+    @Test
+    fun Error_Dialog_Displayed_Error() {
+        composeRule.setContent {
+            AuthenticationContent(Modifier, authenticationState = AuthenticationState(error = "error")) {}
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_ERROR_ALERT).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun Loading_Indicator_Is_Displayed() {
+        composeRule.setContent {
+            AuthenticationContent(modifier = Modifier,
+                authenticationState = AuthenticationState(isLoading = true)
+            ) {}
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_PROGRESS).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun Loading_Indicator_Is_NotDisplayed() {
+        composeRule.setContent {
+            AuthenticationContent(modifier = Modifier,
+                authenticationState = AuthenticationState()
+            ) {}
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_PROGRESS).assertDoesNotExist()
+        }
+    }
+
+    @Test
+    fun testContent_Is_Displayed() {
+        composeRule.setContent {
+            Authentication()
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_INPUT_EMAIL).performTextInput(EMAIL)
+            onNodeWithTag(Tags.TAG_INPUT_PASSWORD).performTextInput(PASSWORD)
+            waitUntil {
+                onAllNodesWithText(EMAIL).fetchSemanticsNodes().size == 1 &&
+                        onAllNodesWithTag(Tags.TAG_INPUT_PASSWORD).fetchSemanticsNodes().size == 1
+            }
+            onNodeWithTag(Tags.TAG_CONTENT).assertExists()
+            onNodeWithTag(Tags.TAG_AUTHENTICATE_BUTTON).performClick()
+            waitUntil {
+                onAllNodesWithTag(Tags.TAG_CONTENT).fetchSemanticsNodes().isEmpty()
+            }
+            onNodeWithTag(Tags.TAG_CONTENT).assertDoesNotExist()
         }
     }
 

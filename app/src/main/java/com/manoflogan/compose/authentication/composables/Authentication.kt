@@ -73,7 +73,9 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
                           handleEvent: (AuthenticationEvent) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (authenticationState.isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                modifier = Modifier.testTag(Tags.TAG_PROGRESS)
+            )
         } else {
             AuthenticationForm(
                 modifier = Modifier.fillMaxSize(),
@@ -119,7 +121,10 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
                        authenticationMode: AuthenticationMode, onSignIn: () -> Unit,
                        isAuthenticationEnabled: Boolean, onToggleAuthenticationMode: () -> Unit
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.then(Modifier.testTag(Tags.TAG_CONTENT)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Spacer(modifier = Modifier.height(32.dp))
         AuthenticationTitle(Modifier, authenticationMode = authenticationMode)
         Card(modifier = Modifier
@@ -297,7 +302,7 @@ fun PasswordRequirements(modifier: Modifier, passwordRequirements: List<Password
 
 @Composable
 fun AuthenticationButton(modifier: Modifier = Modifier, authenticationMode: AuthenticationMode, isEnabled: Boolean,
-                         onClick: () -> Unit,) {
+                         onClick: () -> Unit) {
     Button(
         modifier = modifier.testTag(Tags.TAG_AUTHENTICATE_BUTTON), enabled = isEnabled,
         onClick = onClick
