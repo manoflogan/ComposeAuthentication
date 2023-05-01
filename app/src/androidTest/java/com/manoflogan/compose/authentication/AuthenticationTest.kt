@@ -19,7 +19,9 @@ import androidx.test.core.app.ApplicationProvider
 import com.manoflogan.compose.authentication.composables.Authentication
 import com.manoflogan.compose.authentication.composables.AuthenticationContent
 import com.manoflogan.compose.authentication.composables.AuthenticationForm
+import com.manoflogan.compose.authentication.composables.AuthenticationTitle
 import com.manoflogan.compose.authentication.composables.Tags
+import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
 import com.manoflogan.compose.authentication.ui.theme.JetpackComposeAuthenticationTheme
 import org.junit.Before
@@ -179,6 +181,26 @@ class AuthenticationTest {
                 onAllNodesWithTag(Tags.TAG_CONTENT).fetchSemanticsNodes().isEmpty()
             }
             onNodeWithTag(Tags.TAG_CONTENT).assertDoesNotExist()
+        }
+    }
+
+    @Test
+    fun testSignInIsDisplayed() {
+        composeRule.setContent {
+            AuthenticationTitle(modifier = Modifier, authenticationMode = AuthenticationMode.SIGN_IN)
+        }
+        composeRule.run {
+            onNodeWithText(context.getString(R.string.label_sign_in_to_account)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun testSignOutIsDisplayed() {
+        composeRule.setContent {
+            AuthenticationTitle(modifier = Modifier, authenticationMode = AuthenticationMode.SIGN_UP)
+        }
+        composeRule.run {
+            onNodeWithText(context.getString(R.string.label_sign_up_for_account)).assertIsDisplayed()
         }
     }
 
