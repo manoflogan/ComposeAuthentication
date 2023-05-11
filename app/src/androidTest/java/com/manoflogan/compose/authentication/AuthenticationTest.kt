@@ -17,6 +17,7 @@ import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import com.manoflogan.compose.authentication.composables.Authentication
+import com.manoflogan.compose.authentication.composables.AuthenticationButton
 import com.manoflogan.compose.authentication.composables.AuthenticationContent
 import com.manoflogan.compose.authentication.composables.AuthenticationForm
 import com.manoflogan.compose.authentication.composables.AuthenticationTitle
@@ -24,6 +25,7 @@ import com.manoflogan.compose.authentication.composables.Tags
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
 import com.manoflogan.compose.authentication.ui.theme.JetpackComposeAuthenticationTheme
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -201,6 +203,59 @@ class AuthenticationTest {
         }
         composeRule.run {
             onNodeWithText(context.getString(R.string.label_sign_up_for_account)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun testAuthenticationButtonSignInDisplayed() {
+        composeRule.setContent {
+            AuthenticationButton(modifier = Modifier, authenticationMode = AuthenticationMode.SIGN_IN, false) {}
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_AUTHENTICATE_BUTTON).assertIsNotEnabled()
+            onNodeWithText(context.getString(R.string.sign_in)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun testAuthenticationButtonSignInEnabledDisplayed() {
+        var isInvoked = false
+        composeRule.setContent {
+            AuthenticationButton(modifier = Modifier, authenticationMode = AuthenticationMode.SIGN_IN, true) {
+                isInvoked = true
+            }
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_AUTHENTICATE_BUTTON).assertIsEnabled().assertTextEquals(context.getString(R.string.sign_in)).performClick()
+            Assert.assertTrue(isInvoked)
+        }
+    }
+
+    @Test
+    fun testAuthenticationButtonSignUpEnabledDisplayed() {
+        var isInvoked = false
+        composeRule.setContent {
+            AuthenticationButton(modifier = Modifier, authenticationMode = AuthenticationMode.SIGN_UP, true) {
+                isInvoked = true
+            }
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_AUTHENTICATE_BUTTON).assertIsEnabled().assertTextEquals(context.getString(R.string.sign_up)).performClick()
+            Assert.assertTrue(isInvoked)
+        }
+    }
+
+    @Test
+    fun testAuthenticationButtonSignUpDisabledDisplayed() {
+        var isInvoked = false
+        composeRule.setContent {
+            AuthenticationButton(modifier = Modifier, authenticationMode = AuthenticationMode.SIGN_UP, false) {
+                isInvoked = true
+            }
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_AUTHENTICATE_BUTTON).assertTextEquals(context.getString(R.string.sign_up)).assertIsNotEnabled()
+            Assert.assertFalse(isInvoked)
         }
     }
 
