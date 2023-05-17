@@ -22,6 +22,7 @@ import com.manoflogan.compose.authentication.composables.AuthenticationContent
 import com.manoflogan.compose.authentication.composables.AuthenticationForm
 import com.manoflogan.compose.authentication.composables.AuthenticationTitle
 import com.manoflogan.compose.authentication.composables.Tags
+import com.manoflogan.compose.authentication.composables.ToggleAuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
 import com.manoflogan.compose.authentication.ui.theme.JetpackComposeAuthenticationTheme
@@ -256,6 +257,34 @@ class AuthenticationTest {
         composeRule.run {
             onNodeWithTag(Tags.TAG_AUTHENTICATE_BUTTON).assertTextEquals(context.getString(R.string.sign_up)).assertIsNotEnabled()
             Assert.assertFalse(isInvoked)
+        }
+    }
+
+    @Test
+    fun testToggleOnSignUpShowsHaveAccount() {
+        var isInvoked = false
+        composeRule.setContent {
+            ToggleAuthenticationMode(Modifier, AuthenticationMode.SIGN_UP) {
+                isInvoked = true
+            }
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_AUTHENTICATION_TOGGLE).assertTextEquals(context.getString(R.string.have_account)).performClick()
+            Assert.assertTrue(isInvoked)
+        }
+    }
+
+    @Test
+    fun testToggleOnSignInShowsNeedAccount() {
+        var isInvoked = false
+        composeRule.setContent {
+            ToggleAuthenticationMode(Modifier, AuthenticationMode.SIGN_IN) {
+                isInvoked = true
+            }
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_AUTHENTICATION_TOGGLE).assertTextEquals(context.getString(R.string.need_account)).performClick()
+            Assert.assertTrue(isInvoked)
         }
     }
 

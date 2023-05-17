@@ -331,10 +331,9 @@ fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: Authenticat
         ) {
             Text(
                 text = stringResource(
-                    if (authenticationMode == AuthenticationMode.SIGN_IN) {
-                        R.string.need_account
-                    } else {
-                        R.string.have_account
+                    when(authenticationMode) {
+                        AuthenticationMode.SIGN_IN -> R.string.need_account
+                        AuthenticationMode.SIGN_UP -> R.string.have_account
                     }
                 )
             )
