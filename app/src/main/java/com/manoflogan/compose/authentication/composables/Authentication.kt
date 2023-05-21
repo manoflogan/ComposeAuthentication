@@ -187,7 +187,7 @@ fun EmailInput(modifier: Modifier, email: String, onEmailChanged: (String) -> Un
 
 @Composable
 fun PasswordInput(modifier: Modifier, password: String, onPasswordChanged: (String) -> Unit, onDone: () -> Unit) {
-    var isPasswordHidden by rememberSaveable { mutableStateOf(false) }
+    var isPasswordHidden by rememberSaveable { mutableStateOf(true) }
     TextField(
         modifier = modifier.testTag(Tags.TAG_INPUT_PASSWORD),
         value = password,
@@ -215,7 +215,7 @@ fun PasswordInput(modifier: Modifier, password: String, onPasswordChanged: (Stri
                         )
                 ) {
                   isPasswordHidden = !isPasswordHidden
-                },
+                }.testTag(Tags.TAG_SHOW_PASSWORD + isPasswordHidden),
                 imageVector = if (isPasswordHidden) {
                     Icons.Default.Visibility
                 } else {

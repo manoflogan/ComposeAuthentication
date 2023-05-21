@@ -2,11 +2,13 @@ package com.manoflogan.compose.authentication
 
 import android.content.Context
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -15,22 +17,28 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextInputSelection
+import androidx.compose.ui.text.TextRange
 import androidx.test.core.app.ApplicationProvider
 import com.manoflogan.compose.authentication.composables.Authentication
 import com.manoflogan.compose.authentication.composables.AuthenticationButton
 import com.manoflogan.compose.authentication.composables.AuthenticationContent
 import com.manoflogan.compose.authentication.composables.AuthenticationForm
 import com.manoflogan.compose.authentication.composables.AuthenticationTitle
+import com.manoflogan.compose.authentication.composables.EmailInput
+import com.manoflogan.compose.authentication.composables.PasswordInput
 import com.manoflogan.compose.authentication.composables.Tags
 import com.manoflogan.compose.authentication.composables.ToggleAuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
-import com.manoflogan.compose.authentication.ui.theme.JetpackComposeAuthenticationTheme
+import org.hamcrest.MatcherAssert
+import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalTestApi::class)
 class AuthenticationTest {
 
     @get:Rule
@@ -285,6 +293,88 @@ class AuthenticationTest {
         composeRule.run {
             onNodeWithTag(Tags.TAG_AUTHENTICATION_TOGGLE).assertTextEquals(context.getString(R.string.need_account)).performClick()
             Assert.assertTrue(isInvoked)
+        }
+    }
+
+    @Test
+    fun showEmailInput() {
+        composeRule.setContent {
+            EmailInput(modifier = Modifier, email = EMAIL, onEmailChanged = {
+            }) {
+            }
+        }
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_INPUT_EMAIL, useUnmergedTree = true).assertTextEquals(EMAIL).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun enterEmailText() {
+        var isInvoked = false
+        val appendText = "jetpack"
+        var newText = ""
+        composeRule.setContent {
+           EmailInput(modifier = Modifier, email = EMAIL, onEmailChanged = {
+               isInvoked = true
+               newText = it
+           }) {}
+        }
+
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_INPUT_EMAIL).apply {
+                performTextInputSelection(TextRange(EMAIL.length))
+                performTextInput(appendText)
+            }
+        }
+        MatcherAssert.assertThat(isInvoked, Matchers.`is`(true))
+        MatcherAssert.assertThat(newText, Matchers.`is`("$EMAIL$appendText"))
+    }
+
+    @Test
+    fun testPasswordDisplayed() {
+        composeRule.setContent {
+            PasswordInput(modifier = Modifier, password = PASSWORD, onPasswordChanged = {
+            }) {}
+        }
+
+        composeRule.run {
+            onNodeWithTag("${Tags.TAG_SHOW_PASSWORD}true").assertIsDisplayed().performClick()
+            onNodeWithTag(Tags.TAG_INPUT_PASSWORD, useUnmergedTree = true).assertTextEquals(PASSWORD).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun enterPasswordText() {
+        var isInvoked = false
+        val appendText = "jetpack"
+        var newText = ""
+        composeRule.setContent {
+            PasswordInput(modifier = Modifier, password = PASSWORD, onPasswordChanged = {
+                isInvoked = true
+                newText = it
+            }) {}
+        }
+
+        composeRule.run {
+            onNodeWithTag(Tags.TAG_INPUT_PASSWORD).apply {
+                performTextInputSelection(TextRange(PASSWORD.length))
+                performTextInput(appendText)
+            }
+        }
+        MatcherAssert.assertThat(isInvoked, Matchers.`is`(true))
+        MatcherAssert.assertThat(newText, Matchers.`is`("$PASSWORD$appendText"))
+    }
+
+    @Test
+    fun showPasswordOnToggle() {
+        composeRule.setContent {
+            PasswordInput(modifier = Modifier, password = PASSWORD, onPasswordChanged = {
+            }) {}
+        }
+
+        composeRule.run {
+            onNodeWithTag("${Tags.TAG_SHOW_PASSWORD}true").performClick()
+            onNodeWithTag(Tags.TAG_INPUT_PASSWORD, useUnmergedTree = true).assertTextEquals(PASSWORD).assertIsDisplayed()
         }
     }
 
