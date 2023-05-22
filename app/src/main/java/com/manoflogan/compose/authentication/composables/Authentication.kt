@@ -58,7 +58,7 @@ import com.manoflogan.compose.authentication.AuthenticationViewModel
 import com.manoflogan.compose.authentication.R
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
-import com.manoflogan.compose.authentication.models.PasswordRequirements
+import com.manoflogan.compose.authentication.models.PasswordRequirement
 
 @Composable
 fun Authentication() {
@@ -117,7 +117,7 @@ fun AuthenticationContent(modifier: Modifier, authenticationState: Authenticatio
 @Composable
 fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChanged: (String) -> Unit,
                        password: String, onPasswordChanged: (String) -> Unit, onDoneClicked: () -> Unit,
-                       completedPasswordRequirements: List<PasswordRequirements>,
+                       completedPasswordRequirements: List<PasswordRequirement>,
                        authenticationMode: AuthenticationMode, onSignIn: () -> Unit,
                        isAuthenticationEnabled: Boolean, onToggleAuthenticationMode: () -> Unit
 ) {
@@ -143,7 +143,7 @@ fun AuthenticationForm(modifier: Modifier = Modifier, email: String, onEmailChan
                 if(authenticationMode == AuthenticationMode.SIGN_IN) {
                     PasswordRequirements(
                         modifier = Modifier.fillMaxWidth(),
-                        passwordRequirements = completedPasswordRequirements
+                        satisfiedRequirements = completedPasswordRequirements
                     )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
@@ -258,43 +258,53 @@ fun AuthenticationTitle(modifier: Modifier, authenticationMode: AuthenticationMo
 }
 
 @Composable
-fun Requirement(modifier: Modifier = Modifier, message: String, isSatisfied: Boolean) {
-    val passwordStatus = stringResource(id =if (isSatisfied)  {
-            R.string.password_requirements_satisfied
-        } else {
-            R.string.password_requirements_unsatisfied
-        }
-    )
+fun Requirement(
+    modifier: Modifier = Modifier,
+    message: String,
+    satisfied: Boolean
+) {
+    val requirementStatus = if (satisfied) {
+        stringResource(id = R.string.password_requirements_satisfied, message)
+    } else {
+        stringResource(id =R.string.password_requirements_unsatisfied, message)
+    }
     Row(
         modifier = modifier
             .padding(6.dp)
-            .semantics(
-                mergeDescendants = true
-            ) {
-                text = AnnotatedString(passwordStatus)
-            }, verticalAlignment = Alignment.CenterVertically
+            .semantics(mergeDescendants = true) {
+                text = AnnotatedString(requirementStatus)
+            },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        val tint = if (isSatisfied) {
-            MaterialTheme.colors.onSurface
-        } else {
-            MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
-        }
+        val tint = if (satisfied) {
+            MaterialTheme.colors.primary
+        } else MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
         Icon(
-            modifier = modifier.size(12.dp), imageVector = Icons.Default.Check,
-            contentDescription =  null, tint = tint
+            modifier = Modifier.size(12.dp),
+            imageVector = Icons.Default.Check,
+            contentDescription = null,
+            tint = tint
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(modifier = Modifier.clearAndSetSemantics {  }, text = message, fontSize = 12.sp, color = tint)
+        Text(
+            modifier = Modifier.clearAndSetSemantics {  },
+            fontSize = 12.sp,
+            text = message,
+            color = tint
+        )
     }
 }
 
 @Composable
-fun PasswordRequirements(modifier: Modifier, passwordRequirements: List<PasswordRequirements>) {
+fun PasswordRequirements(
+    modifier: Modifier = Modifier,
+    satisfiedRequirements: List<PasswordRequirement>
+) {
     Column(modifier = modifier) {
-        PasswordRequirements.values().forEach {
+        PasswordRequirement.values().forEach { requirement ->
             Requirement(
-                message = stringResource(id = it.stringResource),
-                isSatisfied = passwordRequirements.contains(it)
+                message = stringResource(id = requirement.label),
+                satisfied = satisfiedRequirements.contains(requirement)
             )
         }
     }

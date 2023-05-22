@@ -32,8 +32,8 @@
     <string name="label_password">Password</string>
     <string name="cd_show_password">Show Password</string>
     <string name="cd_hide_password">Hide Password</string>
-    <string name="password_requirements_satisfied">Password requirements satisfied</string>
-    <string name="password_requirements_unsatisfied">Password requirements unsatisfied</string>
+    <string name="password_requirements_satisfied">%s Password requirements satisfied</string>
+    <string name="password_requirements_unsatisfied">%s Password requirements unsatisfied</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_in">Sign In</string>
     <string name="need_account">Need an account?</string>

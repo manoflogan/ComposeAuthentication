@@ -4,7 +4,7 @@ data class AuthenticationState(
     val authenticationMode: AuthenticationMode = AuthenticationMode.SIGN_IN,
     val email: String? = null,
     val password: String? = null,
-    val passwordRequirements: List<PasswordRequirements> = emptyList(),
+    val passwordRequirements: List<PasswordRequirement> = emptyList(),
     // Progress state
     val isLoading: Boolean = false,
     // Error state
@@ -17,7 +17,7 @@ data class AuthenticationState(
     fun isFormValid(): Boolean =
         !email.isNullOrEmpty() && !password.isNullOrEmpty() &&
                 (authenticationMode == AuthenticationMode.SIGN_IN &&
-                        passwordRequirements.containsAll(PasswordRequirements.values().toList())
+                        passwordRequirements.containsAll(PasswordRequirement.values().toList())
                 )
 
 }

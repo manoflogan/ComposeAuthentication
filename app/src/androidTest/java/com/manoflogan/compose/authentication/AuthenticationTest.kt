@@ -5,32 +5,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasTextExactly
+import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.text.TextRange
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.manoflogan.compose.authentication.composables.Authentication
 import com.manoflogan.compose.authentication.composables.AuthenticationButton
 import com.manoflogan.compose.authentication.composables.AuthenticationContent
-import com.manoflogan.compose.authentication.composables.AuthenticationForm
 import com.manoflogan.compose.authentication.composables.AuthenticationTitle
 import com.manoflogan.compose.authentication.composables.EmailInput
 import com.manoflogan.compose.authentication.composables.PasswordInput
+import com.manoflogan.compose.authentication.composables.PasswordRequirements
 import com.manoflogan.compose.authentication.composables.Tags
 import com.manoflogan.compose.authentication.composables.ToggleAuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
+import com.manoflogan.compose.authentication.models.PasswordRequirement
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Assert
@@ -375,6 +377,32 @@ class AuthenticationTest {
         composeRule.run {
             onNodeWithTag("${Tags.TAG_SHOW_PASSWORD}true").performClick()
             onNodeWithTag(Tags.TAG_INPUT_PASSWORD, useUnmergedTree = true).assertTextEquals(PASSWORD).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun Password_Requirements_Displayed_As_Not_Satisfied() {
+        val requirements = PasswordRequirement.values().toList()
+        val satisfiedRequirement = requirements[(0 until requirements.count()).random()]
+
+        composeRule.setContent {
+            PasswordRequirements(satisfiedRequirements = listOf(satisfiedRequirement))
+        }
+
+        PasswordRequirement.values().forEach { passwordRequirement ->
+            val requirement = InstrumentationRegistry.getInstrumentation().targetContext
+                .getString(passwordRequirement.label)
+            val message = if (passwordRequirement == satisfiedRequirement) {
+                context
+                    .getString(R.string.password_requirements_satisfied, requirement)
+            } else {
+                context
+                    .getString(R.string.password_requirements_unsatisfied, requirement)
+            }
+
+            composeRule
+                .onNodeWithText(message, useUnmergedTree = true)
+                .assertIsDisplayed()
         }
     }
 

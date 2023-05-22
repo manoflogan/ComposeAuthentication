@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manoflogan.compose.authentication.models.AuthenticationMode
 import com.manoflogan.compose.authentication.models.AuthenticationState
-import com.manoflogan.compose.authentication.models.PasswordRequirements
+import com.manoflogan.compose.authentication.models.PasswordRequirement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,15 +32,15 @@ class AuthenticationViewModel: ViewModel() {
     }
 
     fun updatePassword(password: String) {
-        val requirements = mutableListOf<PasswordRequirements>()
+        val requirements = mutableListOf<PasswordRequirement>()
         if (password.length > 7) {
-            requirements.add(PasswordRequirements.EIGHT_CHARACTERS)
+            requirements.add(PasswordRequirement.EIGHT_CHARACTERS)
         }
         if (password.any { it.isUpperCase() }) {
-            requirements.add(PasswordRequirements.CAPITAL_LETTERS)
+            requirements.add(PasswordRequirement.CAPITAL_LETTERS)
         }
         if (password.any { it.isDigit() }) {
-            requirements.add(PasswordRequirements.NUMBER)
+            requirements.add(PasswordRequirement.NUMBER)
         }
         _authenticationStateFlow.value = _authenticationStateFlow.value.copy(
             password = password, passwordRequirements = requirements
