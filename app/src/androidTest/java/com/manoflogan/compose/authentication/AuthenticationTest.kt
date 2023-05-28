@@ -24,6 +24,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.manoflogan.compose.authentication.composables.Authentication
 import com.manoflogan.compose.authentication.composables.AuthenticationButton
 import com.manoflogan.compose.authentication.composables.AuthenticationContent
+import com.manoflogan.compose.authentication.composables.AuthenticationErrorDialog
 import com.manoflogan.compose.authentication.composables.AuthenticationTitle
 import com.manoflogan.compose.authentication.composables.EmailInput
 import com.manoflogan.compose.authentication.composables.PasswordInput
@@ -403,6 +404,32 @@ class AuthenticationTest {
             composeRule
                 .onNodeWithText(message, useUnmergedTree = true)
                 .assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun validateThatErrorDialogIsDisplayed() {
+        val message = "error message"
+        composeRule.setContent {
+            AuthenticationErrorDialog(error = message) {}
+        }
+        composeRule.run {
+            onNodeWithText(message).assertTextEquals(message)
+        }
+    }
+
+    @Test
+    fun validateThatDismissActionIsInvoked() {
+        val message = "error message"
+        var isInvoked = false
+        composeRule.setContent {
+            AuthenticationErrorDialog(error = message) {
+                isInvoked = true
+            }
+        }
+        composeRule.run {
+            onNodeWithText(context.getString(android.R.string.ok)).performClick()
+            MatcherAssert.assertThat(isInvoked, Matchers.`is`(true))
         }
     }
 

@@ -352,7 +352,7 @@ fun ToggleAuthenticationMode(modifier: Modifier, authenticationMode: Authenticat
 }
 
 @Composable
-fun AuthenticationErrorDialog(modifier: Modifier, error: String, onDismiss: () -> Unit) {
+fun AuthenticationErrorDialog(modifier: Modifier = Modifier, error: String, onDismiss: () -> Unit) {
     AlertDialog(
         modifier = modifier.testTag(Tags.TAG_ERROR_ALERT),
         onDismissRequest = {
@@ -366,7 +366,7 @@ fun AuthenticationErrorDialog(modifier: Modifier, error: String, onDismiss: () -
         },
         confirmButton = {
             TextButton(onClick = { onDismiss()  }) {
-                Text(text = stringResource(id = R.string.error_ok))
+                Text(text = stringResource(id = android.R.string.ok))
             }
         }
     )
