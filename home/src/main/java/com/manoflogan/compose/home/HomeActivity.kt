@@ -3,13 +3,7 @@ package com.manoflogan.compose.home
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.manoflogan.compose.home.composables.Home
 import com.manoflogan.compose.home.ui.theme.JetpackComposeAuthenticationTheme
 
 class HomeActivity : ComponentActivity() {
@@ -18,29 +12,8 @@ class HomeActivity : ComponentActivity() {
         setContent {
             JetpackComposeAuthenticationTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+                Home()
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    JetpackComposeAuthenticationTheme {
-        Greeting("Android")
     }
 }
