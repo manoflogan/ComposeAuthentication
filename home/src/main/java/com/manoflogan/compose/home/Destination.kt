@@ -1,7 +1,6 @@
 package com.manoflogan.compose.home
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
@@ -12,7 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * and floating action button navigation.
  */
 sealed class Destination(
-    val path: String,
+    val title: String,
     val imageVector: ImageVector? = null
 ) {
 
