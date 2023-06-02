@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.manoflogan.compose.home.Destination
 import com.manoflogan.compose.home.R
 
@@ -51,9 +52,10 @@ fun Home(modifier: Modifier = Modifier) {
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
     ) {
-        ContentArea(modifier = Modifier.padding(it), destination = Destination.Contacts)
+        val navigationController = rememberNavController()
+        Navigation(modifier = Modifier.padding(it), navigationController)
     }
 }
 
@@ -67,11 +69,11 @@ fun ContentArea(modifier: Modifier = Modifier, destination: Destination) {
         destination.imageVector?.let {
             Icon(
                 modifier = Modifier.size(80.dp), imageVector = it,
-                contentDescription = destination.title
+                contentDescription = destination.path
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-        Text(text = destination.title, fontSize = 16.sp)
+        Text(text = destination.path, fontSize = 16.sp)
     }
 }
 

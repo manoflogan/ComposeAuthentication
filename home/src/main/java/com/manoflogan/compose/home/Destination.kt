@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * and floating action button navigation.
  */
 sealed class Destination(
-    val title: String,
+    val path: String,
     val imageVector: ImageVector? = null
 ) {
 
