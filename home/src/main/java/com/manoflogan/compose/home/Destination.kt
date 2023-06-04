@@ -12,13 +12,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 sealed class Destination(
     val path: String,
-    val imageVector: ImageVector? = null
+    val imageVector: ImageVector? = null,
+    val isRootDestination: Boolean = true
 ) {
-
     /**
      * Home destination
      */
-    object Home: Destination("home")
+    object Home: Destination("Home")
 
     /**
      * Feed
@@ -34,4 +34,14 @@ sealed class Destination(
      * Contacts
      */
     object Contacts: Destination("contacts", Icons.Default.Person)
+
+    companion object {
+        fun from(path: String): Destination =
+            when(path) {
+                Feed.path -> Feed
+                Calendar.path -> Calendar
+                Contacts.path -> Contacts
+                else -> Home
+            }
+    }
 }

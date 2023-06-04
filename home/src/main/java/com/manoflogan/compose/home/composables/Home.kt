@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,12 +18,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.manoflogan.compose.home.Destination
 import com.manoflogan.compose.home.R
@@ -33,6 +39,17 @@ import com.manoflogan.compose.home.R
 @Composable
 fun Home(modifier: Modifier = Modifier) {
     val scaffoldState = rememberScaffoldState()
+    val navigationController = rememberNavController()
+    val backStackEntry = navigationController.currentBackStackEntryAsState()
+    val currentDestination by remember(backStackEntry) {
+        derivedStateOf {
+            backStackEntry.value?.destination?.route?.let {
+                Destination.from(it)
+            } ?: run {
+                Destination.Home
+            }
+        }
+    }
     Scaffold(
         modifier = modifier,
         scaffoldState = scaffoldState,
@@ -53,8 +70,24 @@ fun Home(modifier: Modifier = Modifier) {
             }
         },
         floatingActionButtonPosition = FabPosition.End,
+        bottomBar = {
+            NavigationBottomBar(Modifier.fillMaxWidth(), currentDestination) {
+                navigationController.navigate(it.path) {
+                    // Pop up to the start destination of the graph to
+                    // avoid building up a large stack of destinations
+                    // on the back stack as users select items
+                    popUpTo(navigationController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    // Avoid multiple copies of the same destination when
+                    // reselecting the same item
+                    launchSingleTop = true
+                    // Restore state when reselecting a previously selected item
+                    restoreState = true
+                }
+            }
+        }
     ) {
-        val navigationController = rememberNavController()
         Navigation(modifier = Modifier.padding(it), navigationController)
     }
 }

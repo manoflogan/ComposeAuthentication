@@ -16,7 +16,7 @@ fun Navigation(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    NavHost(modifier = modifier, navController = navController, startDestination = Destination.Feed.path) {
+    NavHost(modifier = modifier, navController = navController, startDestination = Destination.Home.path) {
         composable(Destination.Home.path) {
             ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Home)
 
