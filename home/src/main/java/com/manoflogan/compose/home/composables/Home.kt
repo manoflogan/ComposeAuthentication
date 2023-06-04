@@ -8,19 +8,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Button
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,6 +37,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.manoflogan.compose.home.Destination
 import com.manoflogan.compose.home.R
+import kotlinx.coroutines.launch
 
 /**
  * Home composable
@@ -41,6 +47,7 @@ fun Home(modifier: Modifier = Modifier) {
     val scaffoldState = rememberScaffoldState()
     val navigationController = rememberNavController()
     val backStackEntry = navigationController.currentBackStackEntryAsState()
+    val coroutineScope = rememberCoroutineScope()
     val currentDestination by remember(backStackEntry) {
         derivedStateOf {
             backStackEntry.value?.destination?.route?.let {
@@ -54,9 +61,39 @@ fun Home(modifier: Modifier = Modifier) {
         modifier = modifier,
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar {
-                Text(text = stringResource(id = R.string.app_name))
-            }
+            TopAppBar(
+                modifier = modifier,
+                title = {
+                    Text(text = stringResource(id = R.string.app_name))
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        //openDrawer()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = stringResource(
+                                id = R.string.cd_open_menu
+                            )
+                        )
+                    }
+                },
+                actions = {
+                    if (currentDestination != Destination.Feed) {
+                        val snackbarMessage = stringResource(id = R.string.cd_not_available)
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(snackbarMessage)
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = stringResource(id = R.string.cd_more_information)
+                            )
+                        }
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
