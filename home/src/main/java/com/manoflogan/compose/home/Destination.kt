@@ -35,12 +35,21 @@ sealed class Destination(
      */
     object Contacts: Destination("contacts", Icons.Default.Person)
 
+    object Settings: Destination("Settings")
+
+    object Upgrade: Destination("Upgrade")
+
+    object Logout: Destination("Logout")
+
     companion object {
         fun from(path: String): Destination =
             when(path) {
                 Feed.path -> Feed
                 Calendar.path -> Calendar
                 Contacts.path -> Contacts
+                Settings.path -> Settings
+                Upgrade.path -> Upgrade
+                Logout.path -> Logout
                 else -> Home
             }
     }

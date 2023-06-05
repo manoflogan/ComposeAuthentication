@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -55,6 +54,21 @@ fun Home(modifier: Modifier = Modifier) {
             } ?: run {
                 Destination.Home
             }
+        }
+    }
+    val navigationCallback: (Destination) -> Unit = {
+        navigationController.navigate(it.path) {
+            // Pop up to the start destination of the graph to
+            // avoid building up a large stack of destinations
+            // on the back stack as users select items
+            popUpTo(navigationController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            // Avoid multiple copies of the same destination when
+            // reselecting the same item
+            launchSingleTop = true
+            // Restore state when reselecting a previously selected item
+            restoreState = true
         }
     }
     Scaffold(
@@ -109,19 +123,12 @@ fun Home(modifier: Modifier = Modifier) {
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
             NavigationBottomBar(Modifier.fillMaxWidth(), currentDestination) {
-                navigationController.navigate(it.path) {
-                    // Pop up to the start destination of the graph to
-                    // avoid building up a large stack of destinations
-                    // on the back stack as users select items
-                    popUpTo(navigationController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
-                }
+                navigationCallback.invoke(it)
+            }
+        },
+        drawerContent = {
+            DrawerContent(navigationCallback) {
+
             }
         }
     ) {
