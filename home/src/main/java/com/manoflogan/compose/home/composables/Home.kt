@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -43,10 +46,11 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun Home(modifier: Modifier = Modifier) {
-    val scaffoldState = rememberScaffoldState()
     val navigationController = rememberNavController()
     val backStackEntry = navigationController.currentBackStackEntryAsState()
     val coroutineScope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scaffoldState = rememberScaffoldState(drawerState)
     val currentDestination by remember(backStackEntry) {
         derivedStateOf {
             backStackEntry.value?.destination?.route?.let {
@@ -71,68 +75,79 @@ fun Home(modifier: Modifier = Modifier) {
             restoreState = true
         }
     }
-    Scaffold(
-        modifier = modifier,
-        scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(
-                modifier = modifier,
-                title = {
-                    Text(text = stringResource(id = R.string.app_name))
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        //openDrawer()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = stringResource(
-                                id = R.string.cd_open_menu
-                            )
-                        )
-                    }
-                },
-                actions = {
-                    if (currentDestination != Destination.Feed) {
-                        val snackbarMessage = stringResource(id = R.string.cd_not_available)
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(snackbarMessage)
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = stringResource(id = R.string.cd_more_information)
-                            )
-                        }
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                }
-            ) {
-                Icon(
-                    imageVector =Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.create_item)
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-        bottomBar = {
-            NavigationBottomBar(Modifier.fillMaxWidth(), currentDestination) {
-                navigationCallback.invoke(it)
-            }
-        },
+    ModalDrawer(
         drawerContent = {
             DrawerContent(navigationCallback) {
 
             }
-        }
+        },
+        drawerState = drawerState
     ) {
-        Navigation(modifier = Modifier.padding(it), navigationController)
+        Scaffold(
+            modifier = modifier,
+            scaffoldState = scaffoldState,
+            topBar = {
+                TopAppBar(
+                    modifier = modifier,
+                    title = {
+                        Text(text = stringResource(id = R.string.app_name))
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                drawerState.open()
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = stringResource(
+                                    id = R.string.cd_open_menu
+                                )
+                            )
+                        }
+                    },
+                    actions = {
+                        if (currentDestination != Destination.Feed) {
+                            val snackbarMessage = stringResource(id = R.string.cd_not_available)
+                            IconButton(onClick = {
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(snackbarMessage)
+                                }
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = stringResource(id = R.string.cd_more_information)
+                                )
+                            }
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                    }
+                ) {
+                    Icon(
+                        imageVector =Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.create_item)
+                    )
+                }
+            },
+            floatingActionButtonPosition = FabPosition.End,
+            bottomBar = {
+                NavigationBottomBar(Modifier.fillMaxWidth(), currentDestination) {
+                    navigationCallback.invoke(it)
+                }
+            },
+            drawerContent = {
+                DrawerContent(navigationCallback) {
+
+                }
+            }
+        ) {
+            Navigation(modifier = Modifier.padding(it), navigationController)
+        }
     }
 }
 

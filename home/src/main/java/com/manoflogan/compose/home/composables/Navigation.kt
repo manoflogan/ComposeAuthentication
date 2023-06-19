@@ -31,5 +31,14 @@ fun Navigation(
         composable(Destination.Calendar.path) {
             ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Calendar)
         }
+        composable(Destination.Settings.path) {
+            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Settings)
+        }
+        composable(Destination.Upgrade.path) {
+            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Upgrade)
+        }
+        composable(Destination.Logout.path) {
+            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Logout)
+        }
     }
 }
