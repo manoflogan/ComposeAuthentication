@@ -74,11 +74,14 @@ fun Home(modifier: Modifier = Modifier) {
             // Restore state when reselecting a previously selected item
             restoreState = true
         }
+        coroutineScope.launch {
+            drawerState.close()
+        }
     }
     ModalDrawer(
         drawerContent = {
             DrawerContent(navigationCallback) {
-
+                navigationCallback(Destination.Logout)
             }
         },
         drawerState = drawerState
