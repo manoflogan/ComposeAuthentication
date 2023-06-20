@@ -90,41 +90,18 @@ fun Home(modifier: Modifier = Modifier) {
             modifier = modifier,
             scaffoldState = scaffoldState,
             topBar = {
-                TopAppBar(
-                    modifier = modifier,
-                    title = {
-                        Text(text = stringResource(id = R.string.app_name))
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
+                     RootDestinationTopBar(modifier = modifier, currentDestination = currentDestination,
+                         onDrawerOpen = {
                             coroutineScope.launch {
                                 drawerState.open()
                             }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = stringResource(
-                                    id = R.string.cd_open_menu
-                                )
-                            )
-                        }
-                    },
-                    actions = {
-                        if (currentDestination != Destination.Feed) {
-                            val snackbarMessage = stringResource(id = R.string.cd_not_available)
-                            IconButton(onClick = {
-                                coroutineScope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(snackbarMessage)
-                                }
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = stringResource(id = R.string.cd_more_information)
-                                )
-                            }
-                        }
-                    }
-                )
+                         },
+                         showSnackbar = { message: String ->
+                             coroutineScope.launch {
+                                 scaffoldState.snackbarHostState.showSnackbar(message)
+                             }
+                         }
+                     )
             },
             floatingActionButton = {
                 FloatingActionButton(

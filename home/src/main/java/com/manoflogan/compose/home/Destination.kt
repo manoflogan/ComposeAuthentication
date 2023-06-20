@@ -35,9 +35,9 @@ sealed class Destination(
      */
     object Contacts: Destination("contacts", Icons.Default.Person)
 
-    object Settings: Destination("Settings")
+    object Settings: Destination("Settings", isRootDestination = false)
 
-    object Upgrade: Destination("Upgrade")
+    object Upgrade: Destination("Upgrade", isRootDestination = false)
 
     object Logout: Destination("Logout")
 
