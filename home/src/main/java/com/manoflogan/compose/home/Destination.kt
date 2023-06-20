@@ -1,6 +1,7 @@
 package com.manoflogan.compose.home
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
@@ -41,6 +42,10 @@ sealed class Destination(
 
     object Logout: Destination("Logout")
 
+    object Creation: Destination("creation", isRootDestination = false)
+
+    object Add: Destination("add", imageVector = Icons.Default.Add, isRootDestination = false)
+
     companion object {
         fun from(path: String): Destination =
             when(path) {
@@ -50,6 +55,8 @@ sealed class Destination(
                 Settings.path -> Settings
                 Upgrade.path -> Upgrade
                 Logout.path -> Logout
+                Creation.path -> Creation
+                Add.path -> Add
                 else -> Home
             }
     }

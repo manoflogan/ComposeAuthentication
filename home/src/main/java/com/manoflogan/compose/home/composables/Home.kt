@@ -12,15 +12,12 @@ import androidx.compose.material.DrawerValue
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -90,22 +87,27 @@ fun Home(modifier: Modifier = Modifier) {
             modifier = modifier,
             scaffoldState = scaffoldState,
             topBar = {
-                     RootDestinationTopBar(modifier = modifier, currentDestination = currentDestination,
-                         onDrawerOpen = {
-                            coroutineScope.launch {
-                                drawerState.open()
-                            }
-                         },
-                         showSnackbar = { message: String ->
-                             coroutineScope.launch {
-                                 scaffoldState.snackbarHostState.showSnackbar(message)
-                             }
-                         }
-                     )
+                DestinationTopBar(
+                    destination = currentDestination,
+                    onNavigateUp = {
+                        navigationController.popBackStack()
+                    },
+                    onOpenDrawer = {
+                        coroutineScope.launch {
+                            drawerState.open()
+                        }
+                    },
+                    showSnackbar = { message: String ->
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(message)
+                        }
+                    }
+                )
             },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
+                        navigationController.navigate(Destination.Creation.path)
                     }
                 ) {
                     Icon(
