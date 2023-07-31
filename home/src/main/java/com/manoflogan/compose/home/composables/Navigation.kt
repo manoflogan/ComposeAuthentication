@@ -18,19 +18,16 @@ fun Navigation(
     navController: NavHostController
 ) {
     NavHost(modifier = modifier, navController = navController, startDestination = Destination.Home.path) {
-        composable(Destination.Home.path) {
-            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Home)
-
-        }
-        composable(Destination.Contacts.path) {
-            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Contacts)
-        }
-        composable(Destination.Feed.path) {
-            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Feed)
-
-        }
-        composable(Destination.Calendar.path) {
-            ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Calendar)
+        navigation(startDestination = Destination.Feed.path, route = Destination.Home.path) {
+            composable(Destination.Contacts.path) {
+                ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Contacts)
+            }
+            composable(Destination.Feed.path) {
+                ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Feed)
+            }
+            composable(Destination.Calendar.path) {
+                ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Calendar)
+            }
         }
         composable(Destination.Settings.path) {
             ContentArea(modifier = Modifier.fillMaxSize(), destination = Destination.Settings)

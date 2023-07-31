@@ -105,15 +105,17 @@ fun Home(modifier: Modifier = Modifier) {
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        navigationController.navigate(Destination.Creation.path)
+                if (currentDestination == Destination.Feed) {
+                    FloatingActionButton(
+                        onClick = {
+                            navigationController.navigate(Destination.Creation.path)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.create_item)
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector =Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.create_item)
-                    )
                 }
             },
             floatingActionButtonPosition = FabPosition.End,
