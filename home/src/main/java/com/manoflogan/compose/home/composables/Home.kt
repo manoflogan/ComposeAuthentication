@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -130,7 +132,22 @@ fun Home(modifier: Modifier = Modifier) {
                 }
             }
         ) {
-            Navigation(modifier = Modifier.padding(it), navigationController)
+           NavigationRailBody(
+                       modifier = Modifier.padding(it).fillMaxSize(), navController = navigationController,
+               destination = currentDestination, orientation = LocalConfiguration.current.orientation,
+               onNavigate = {
+                   navigationController.navigate(it.path) {
+                       launchSingleTop = true
+                       restoreState = true
+                       popUpTo(navigationController.graph.findStartDestination().id) {
+                           saveState = true
+                       }
+
+                   }
+               }
+               ) {
+               navigationController.navigate(Destination.Add.path)
+           }
         }
     }
 }

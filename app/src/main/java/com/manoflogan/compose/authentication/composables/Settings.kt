@@ -91,7 +91,7 @@ fun SettingsList(uiState: SettingsState, viewModel: SettingsViewModel, modifier:
                     color = MaterialTheme.colors.onSurface
                 )
             }
-        }
+        },
     ) {
         val scrollState = rememberScrollState()
         Column(
