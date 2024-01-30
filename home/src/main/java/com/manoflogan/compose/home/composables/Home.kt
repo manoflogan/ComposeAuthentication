@@ -1,5 +1,6 @@
 package com.manoflogan.compose.home.composables
 
+import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,6 +78,7 @@ fun Home(modifier: Modifier = Modifier) {
             drawerState.close()
         }
     }
+    val orientation = LocalConfiguration.current.orientation
     ModalDrawer(
         drawerContent = {
             DrawerContent(navigationCallback) {
@@ -107,7 +109,7 @@ fun Home(modifier: Modifier = Modifier) {
                 )
             },
             floatingActionButton = {
-                if (currentDestination == Destination.Feed) {
+                if (currentDestination == Destination.Feed && orientation == Configuration.ORIENTATION_PORTRAIT) {
                     FloatingActionButton(
                         onClick = {
                             navigationController.navigate(Destination.Creation.path)
@@ -122,8 +124,10 @@ fun Home(modifier: Modifier = Modifier) {
             },
             floatingActionButtonPosition = FabPosition.End,
             bottomBar = {
-                NavigationBottomBar(Modifier.fillMaxWidth(), currentDestination) {
-                    navigationCallback.invoke(it)
+                if (orientation != Configuration.ORIENTATION_LANDSCAPE && currentDestination.isRootDestination) {
+                    NavigationBottomBar(Modifier.fillMaxWidth(), currentDestination) {
+                        navigationCallback.invoke(it)
+                    }
                 }
             },
             drawerContent = {
@@ -134,12 +138,12 @@ fun Home(modifier: Modifier = Modifier) {
         ) {
            NavigationRailBody(
                        modifier = Modifier.padding(it).fillMaxSize(), navController = navigationController,
-               destination = currentDestination, orientation = LocalConfiguration.current.orientation,
+               destination = currentDestination, orientation = orientation,
                onNavigate = {
                    navigationController.navigate(it.path) {
                        launchSingleTop = true
                        restoreState = true
-                       popUpTo(navigationController.graph.findStartDestination().id) {
+                       popUpTo(Destination.Home.path) {
                            saveState = true
                        }
 
