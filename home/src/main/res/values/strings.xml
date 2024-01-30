@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Home</string>
+    <string name="create_item">Create a new item</string>
+    <string name="cd_more_information">More information</string>
+    <string name="cd_not_available">Not available</string>
+    <string name="cd_open_menu">Open Menu</string>
+    <string name="label_name">Man of Logan</string>
+    <string name="label_email">foo@example.com</string>
+    <string name="logout">Logout</string>
+    <string name="cd_navigate_up">Go back Home</string>
+</resources>
