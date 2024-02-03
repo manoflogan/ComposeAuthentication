@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">email</string>
+    <string name = "app_name">email</string>
+    <string name = "inbox_title">Inbox (%d)</string>
+    <string name = "inbox_loading">Inbox</string>
 </resources>
