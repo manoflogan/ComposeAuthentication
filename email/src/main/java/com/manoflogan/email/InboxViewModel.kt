@@ -17,7 +17,11 @@ class InboxViewModel: ViewModel() {
     private val _inboxStatusStateFlow: MutableStateFlow<InboxStatus> = MutableStateFlow(InboxStatus.Loading)
     val inboxStatusStateFlow: StateFlow<InboxStatus> = _inboxStatusStateFlow.asStateFlow()
 
-    private fun loadInbox() {
+    init {
+        loadInbox()
+    }
+
+    internal fun loadInbox() {
         viewModelScope.launch {
             _inboxStatusStateFlow.value = InboxStatus.Loading
             delay(2_000)

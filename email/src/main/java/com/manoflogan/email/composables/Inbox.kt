@@ -2,7 +2,6 @@ package com.manoflogan.email.composables
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -17,9 +16,7 @@ fun Inbox(modifier: Modifier = Modifier, viewModel: InboxViewModel = viewModel()
         InboxScaffold(
             modifier = modifier.then(Modifier.padding(dimensionResource(id = R.dimen.scaffold_padding))),
             inboxStatus = viewModel.inboxStatusStateFlow.collectAsState().value,
-            onInboxEvent = { inboxEvent ->
-                viewModel.handleContentEvent(inboxEvent)
-            }
+            onInboxEvent = viewModel::handleContentEvent
         )
     }
 }

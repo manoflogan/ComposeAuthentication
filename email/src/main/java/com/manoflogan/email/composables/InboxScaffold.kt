@@ -7,17 +7,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.manoflogan.email.InboxViewModel
 import com.manoflogan.email.R
 import com.manoflogan.email.data.InboxEvent
 import com.manoflogan.email.data.InboxStatus
-import com.manoflogan.email.ui.theme.JetpackComposeAuthenticationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
