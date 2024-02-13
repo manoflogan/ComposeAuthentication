@@ -1,6 +1,7 @@
 package com.manoflogan.email.composables
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,8 +53,16 @@ fun SwipeDismissBox(
             animationSpec = tween(),
             label = "icon_animate"
         )
+        val iconSize by animateFloatAsState(targetValue =
+            when(targetValue) {
+                SwipeToDismissBoxValue.StartToEnd -> 2f
+                else -> 1f
+            },
+            label = "icon_size"
+        )
+
         Icon(
-            modifier = Modifier.align(Alignment.CenterStart),
+            modifier = Modifier.align(Alignment.CenterStart).scale(iconSize),
             imageVector = Icons.Filled.Delete,
             contentDescription = stringResource(id = R.string.inbox_delete),
             tint = iconColor
