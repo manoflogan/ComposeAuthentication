@@ -39,7 +39,6 @@ fun EmailContent(
         backgroundContent = {
             SwipeDismissBox(
                 modifier = Modifier.fillMaxWidth().height(height),
-                currentValue = dismissState.currentValue,
                 targetValue = dismissState.targetValue
             )
         }

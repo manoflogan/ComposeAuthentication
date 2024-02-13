@@ -1,6 +1,7 @@
 package com.manoflogan.email.composables
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -27,7 +28,6 @@ import com.manoflogan.email.R
 @Composable
 fun SwipeDismissBox(
     modifier: Modifier = Modifier,
-    currentValue: SwipeToDismissBoxValue,
     targetValue: SwipeToDismissBoxValue
 ) {
     val colour by animateColorAsState(
@@ -39,14 +39,24 @@ fun SwipeDismissBox(
     )
     Box(
         modifier = modifier
+            .background(color = colour)
             .padding(dimensionResource(id = R.dimen.email_padding))
             .fillMaxWidth()
-            .background(color = colour)
     ) {
+        val iconColor by animateColorAsState(targetValue =
+            when(targetValue) {
+                SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.onError
+                else -> MaterialTheme.colorScheme.onSurface
+            },
+            animationSpec = tween(),
+            label = "icon_animate"
+        )
         Icon(
             modifier = Modifier.align(Alignment.CenterStart),
             imageVector = Icons.Filled.Delete,
-            contentDescription = stringResource(id = R.string.inbox_delete))
+            contentDescription = stringResource(id = R.string.inbox_delete),
+            tint = iconColor
+        )
     }
 }
 
@@ -56,5 +66,5 @@ fun SwipeDismissBox(
 @Composable
 fun SwipeToDismissBox_Preview() {
     val swipeToDismissValue = rememberSwipeToDismissBoxState()
-    SwipeDismissBox(currentValue = swipeToDismissValue.currentValue, targetValue = swipeToDismissValue.targetValue)
+    SwipeDismissBox(targetValue = swipeToDismissValue.targetValue)
 }
