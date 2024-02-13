@@ -33,14 +33,14 @@ fun EmailContentList(
     emails: List<Email>,
     onInboxEvent: (InboxEvent) -> Unit
 ) {
-    var isEmailDeleted by remember {
-        mutableStateOf(false)
-    }
     LazyColumn(modifier = modifier) {
         items(
             emails,
             key = {item -> item.id }
         ) { email ->
+            var isEmailDeleted by remember {
+                mutableStateOf(false)
+            }
             val dismissBoxState = rememberSwipeToDismissBoxState(
                 confirmValueChange = {
                     if (it == SwipeToDismissBoxValue.StartToEnd) {
@@ -68,7 +68,7 @@ fun EmailContentList(
 
             EmailContent(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.email_padding))
+                    .padding(dimensionResource(id = R.dimen.email_padding_half))
                     .fillMaxWidth()
                     .height(emailHeight),
                 email = email,
