@@ -1,5 +1,6 @@
 package com.manoflogan.email.composables
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +12,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,12 +41,22 @@ fun EmailContent(
         enableDismissFromEndToStart = false,
         backgroundContent = {
             SwipeDismissBox(
-                modifier = Modifier.fillMaxWidth().height(height),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(height),
                 targetValue = dismissState.targetValue
             )
         }
     ) {
-        Card(modifier = modifier.then(Modifier.fillMaxWidth()), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+        val cardElevation by animateDpAsState(targetValue =
+            if (dismissState.targetValue == SwipeToDismissBoxValue.StartToEnd) {
+                dimensionResource(id = R.dimen.email_padding_half)
+            } else {
+                   0.dp
+            },
+            label = "card_elevation"
+        )
+        Card(modifier = modifier.then(Modifier.fillMaxWidth()), elevation = CardDefaults.cardElevation(cardElevation)) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(text = email.title, style = MaterialTheme.typography.headlineSmall)
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.email_padding_half)))
