@@ -36,7 +36,11 @@ class InboxViewModel: ViewModel() {
                     val filteredList = inboxStatus.emails.filterNot { email ->
                         email.id == id
                     }
-                    InboxStatus.HasEmails(filteredList)
+                    if (filteredList.isEmpty()) {
+                        InboxStatus.Empty
+                    } else {
+                        InboxStatus.HasEmails(filteredList)
+                    }
                 }
                 else -> inboxStatus
             }
