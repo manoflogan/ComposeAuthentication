@@ -3,6 +3,7 @@ package com.manoflogan.email.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +25,7 @@ fun ErrorState(modifier: Modifier = Modifier, onClick: (InboxEvent) -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = stringResource(id = R.string.inbox_error), style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.email_padding)))
+        Spacer(modifier = Modifier.defaultMinSize(minHeight = dimensionResource(id = R.dimen.email_padding)))
         Button(onClick = { onClick(InboxEvent.RefreshEvent) }) {
             Text(text = stringResource(id = R.string.inbox_retry), style = MaterialTheme.typography.bodySmall)
         }

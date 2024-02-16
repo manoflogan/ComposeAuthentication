@@ -1,29 +1,19 @@
 package com.manoflogan.email.composables
 
-import android.net.ipsec.ike.IkeSessionParams.IkeAuthDigitalSignRemoteConfig
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,7 +21,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.manoflogan.email.R
 import com.manoflogan.email.data.Email
-import com.manoflogan.email.data.InboxEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +39,7 @@ fun EmailContent(
             SwipeDismissBox(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(height),
+                    .defaultMinSize(minHeight = height),
                 targetValue = dismissState.targetValue
             )
         }
