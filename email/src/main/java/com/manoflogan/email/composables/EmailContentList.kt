@@ -63,12 +63,7 @@ fun EmailContentList(
                     120.dp
                 },
                 label = "email_height",
-                animationSpec = tween(delayMillis = 300),
-                finishedListener = {
-                    if (it == 0.dp) {
-                        isEmailDeleted = false
-                    }
-                }
+                animationSpec = tween(delayMillis = 300)
             )
 
             EmailContent(
