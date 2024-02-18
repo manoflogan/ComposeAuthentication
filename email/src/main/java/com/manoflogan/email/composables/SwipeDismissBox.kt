@@ -58,6 +58,7 @@ fun SwipeDismissBox(
                 SwipeToDismissBoxValue.StartToEnd -> 2f
                 else -> 1f
             },
+            animationSpec = tween(),
             label = "icon_size"
         )
 

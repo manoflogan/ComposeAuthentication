@@ -73,6 +73,9 @@ fun EmailContentList(
                     .defaultMinSize(minHeight = emailHeight),
                 email = email,
                 height = emailHeight,
+                onAccessibilityDelete = {
+                    onInboxEvent(InboxEvent.DeleteEvent(email.id))
+                },
                 dismissState = dismissBoxState
             )
         }

@@ -16,6 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,7 @@ fun EmailContent(
     modifier: Modifier = Modifier,
     height: Dp,
     email: Email,
+    onAccessibilityDelete: () -> Unit,
     dismissState: SwipeToDismissBoxState
 ) {
     SwipeToDismissBox(
@@ -36,10 +41,19 @@ fun EmailContent(
         enableDismissFromStartToEnd = true,
         enableDismissFromEndToStart = false,
         backgroundContent = {
+            val deleteAsString = stringResource(id = R.string.inbox_delete)
             SwipeDismissBox(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .defaultMinSize(minHeight = height),
+                    .defaultMinSize(minHeight = height)
+                    .semantics {
+                        customActions = listOf(
+                            CustomAccessibilityAction(label = deleteAsString) {
+                                onAccessibilityDelete.invoke()
+                                true
+                            }
+                        )
+                    },
                 targetValue = dismissState.targetValue
             )
         }
