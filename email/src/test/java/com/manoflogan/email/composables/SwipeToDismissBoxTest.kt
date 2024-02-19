@@ -46,7 +46,22 @@ class SwipeToDismissBoxTest {
             )
         }
         composeRule.run {
-            onNodeWithTag(SwipeDismissBoxTags.TAG)
+            onNode(hasSwipeDismissStateProperty(SwipeToDismissBoxValue.Settled))
+                .assertContentDescriptionEquals(context.getString(R.string.inbox_delete))
+                .assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun validateThatSwipeToDismissBoxGoesFromStartToEnd() {
+        composeRule.setContent {
+            SwipeDismissBox(
+                modifier = Modifier.fillMaxWidth(),
+                targetValue = SwipeToDismissBoxValue.StartToEnd
+            )
+        }
+        composeRule.run {
+            onNode(hasSwipeDismissStateProperty(SwipeToDismissBoxValue.StartToEnd))
                 .assertContentDescriptionEquals(context.getString(R.string.inbox_delete))
                 .assertIsDisplayed()
         }

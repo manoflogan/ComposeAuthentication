@@ -66,7 +66,10 @@ fun SwipeDismissBox(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .scale(iconSize)
-                .testTag(SwipeDismissBoxTags.TAG),
+                .testTag(SwipeDismissBoxTags.TAG)
+                .semantics {
+                    swipeDismissStateId = targetValue
+                },
             imageVector = Icons.Filled.Delete,
             contentDescription = stringResource(id = R.string.inbox_delete),
             tint = iconColor

@@ -1,8 +1,11 @@
 package com.manoflogan.email.composables
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 
-val ColorSemanticPropertyKey = SemanticsPropertyKey<Color>("colour")
-var SemanticsPropertyReceiver.colourId by ColorSemanticPropertyKey
+@OptIn(ExperimentalMaterial3Api::class)
+val SwipeDismissStateProperty = SemanticsPropertyKey<SwipeToDismissBoxValue>("colour")
+@OptIn(ExperimentalMaterial3Api::class)
+var SemanticsPropertyReceiver.swipeDismissStateId by SwipeDismissStateProperty
