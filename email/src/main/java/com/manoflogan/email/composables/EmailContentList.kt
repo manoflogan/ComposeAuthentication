@@ -41,6 +41,7 @@ fun EmailContentList(
                     distance * .25f
                 }
             )
+            // See https://slack-chats.kotlinlang.org/t/16382816/hi-since-the-compose-bom-composebom-2024-02-00-version-the-i#865df5e5-39c6-4dd3-9bc2-8f087300dd8d
             LaunchedEffect(key1 = dismissBoxState) {
                 snapshotFlow {
                     dismissBoxState.currentValue
@@ -66,8 +67,8 @@ fun EmailContentList(
             EmailContent(
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.email_padding_half))
-                    .fillMaxWidth()
-                    .defaultMinSize(minHeight = emailHeight),
+                    .defaultMinSize(minHeight = emailHeight)
+                    .fillMaxWidth(),
                 email = email,
                 height = emailHeight,
                 onAccessibilityDelete = {
