@@ -18,11 +18,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.manoflogan.email.R
 import com.manoflogan.email.data.Email
 import com.manoflogan.email.data.InboxEvent
+
+const val TAG_CONTENT = "content"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +34,7 @@ fun EmailContentList(
     emails: List<Email>,
     onInboxEvent: (InboxEvent) -> Unit
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier.testTag(TAG_CONTENT)) {
         items(emails, key = {item -> item.id }) { email ->
             var isEmailDeleted by remember {
                 mutableStateOf(false)

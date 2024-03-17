@@ -5,11 +5,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onChildAt
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.test.swipeWithVelocity
 import com.manoflogan.email.data.Email
 import com.manoflogan.email.ui.theme.JetpackComposeAuthenticationTheme
+import org.hamcrest.MatcherAssert
+import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -17,6 +23,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.util.regex.Matcher
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -80,27 +87,22 @@ class EmailContentListTest {
 
     @Test
     fun validateThatSwipeActionIsGreaterThanThresholdThenDeleteActionIsTaken() {
+        var isDeleted = false
         composeRule.setContent {
             JetpackComposeAuthenticationTheme {
                 EmailContentList(modifier = Modifier.fillMaxSize(), emails = emails) {
+                    isDeleted = true
                 }
             }
         }
         composeRule.run {
-            emails.first().also { email ->
-                onNodeWithText(email.title).assertIsDisplayed()
-                onNodeWithText(email.description).assertIsDisplayed()
-                onNodeWithText(email.description).performTouchInput {
+            emails.forEachIndexed { index, email ->
+                onNodeWithTag(TAG_CONTENT).onChildAt(index).performScrollTo().performTouchInput {
                     // Swipe partially under the threshold to 40% of the horizontal distance
                     // See https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:wear/compose/compose-foundation/src/androidTest/kotlin/androidx/wear/compose/foundation/BasicSwipeToDismissBoxTest.kt;l=136-146?q=SwipeToDismissBoxTest
-                    swipeWithVelocity(
-                        start = Offset(0f, centerY),
-                        end = Offset(centerX / 2.5f, centerY),
-                        endVelocity = 1.0f
-                    )
+                    swipeRight()
                 }
-                onNodeWithText(email.title).assertIsDisplayed()
-                onNodeWithText(email.description).assertIsDisplayed()
+                MatcherAssert.assertThat(isDeleted, Matchers.equalTo(true))
             }
         }
     }
