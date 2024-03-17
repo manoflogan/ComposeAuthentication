@@ -32,10 +32,7 @@ fun EmailContentList(
     onInboxEvent: (InboxEvent) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
-        items(
-            emails,
-            key = {item -> item.id }
-        ) { email ->
+        items(emails, key = {item -> item.id }) { email ->
             var isEmailDeleted by remember {
                 mutableStateOf(false)
             }

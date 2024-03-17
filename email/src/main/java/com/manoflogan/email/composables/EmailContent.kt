@@ -44,8 +44,8 @@ fun EmailContent(
             val deleteAsString = stringResource(id = R.string.inbox_delete)
             SwipeDismissBox(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .defaultMinSize(minHeight = height)
+                    .fillMaxWidth()
                     .semantics {
                         customActions = listOf(
                             CustomAccessibilityAction(label = deleteAsString) {

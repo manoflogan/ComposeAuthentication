@@ -22,7 +22,11 @@ fun EmptyState(modifier: Modifier = Modifier, onClick: (InboxEvent) -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = stringResource(id = R.string.inbox_empty), style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = stringResource(id = R.string.inbox_empty),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.email_padding)))
         Button(onClick = { onClick(InboxEvent.RefreshEvent) }) {
             Text(text = stringResource(id = R.string.inbox_check))
