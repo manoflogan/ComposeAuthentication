@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -32,6 +33,11 @@ const val TAG_CONTENT = "content"
 fun EmailContentList(
     modifier: Modifier = Modifier,
     emails: List<Email>,
+    dismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(
+        positionalThreshold = { distance ->
+            distance * .25f
+        }
+    ),
     onInboxEvent: (InboxEvent) -> Unit
 ) {
     LazyColumn(modifier = modifier.testTag(TAG_CONTENT)) {
@@ -39,11 +45,6 @@ fun EmailContentList(
             var isEmailDeleted by remember {
                 mutableStateOf(false)
             }
-            val dismissBoxState = rememberSwipeToDismissBoxState(
-                positionalThreshold = { distance ->
-                    distance * .25f
-                }
-            )
             // See https://slack-chats.kotlinlang.org/t/16382816/hi-since-the-compose-bom-composebom-2024-02-00-version-the-i#865df5e5-39c6-4dd3-9bc2-8f087300dd8d
             LaunchedEffect(key1 = dismissBoxState) {
                 snapshotFlow {
@@ -74,9 +75,7 @@ fun EmailContentList(
                     .fillMaxWidth(),
                 email = email,
                 height = emailHeight,
-                onAccessibilityDelete = {
-                    onInboxEvent(InboxEvent.DeleteEvent(email.id))
-                },
+                onAccessibilityDelete = onInboxEvent,
                 dismissState = dismissBoxState
             )
         }

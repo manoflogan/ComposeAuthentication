@@ -1,6 +1,9 @@
 package com.manoflogan.email.composables
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertIsDisplayed
@@ -19,15 +22,8 @@ import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.robolectric.annotation.GraphicsMode
-import java.util.regex.Matcher
 
-@RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [Config.OLDEST_SDK])
+@OptIn(ExperimentalMaterial3Api::class)
 class EmailContentListTest {
 
     private lateinit var emails: List<Email>
@@ -46,7 +42,10 @@ class EmailContentListTest {
     fun validateThatEmailListIsSeen() {
         composeRule.setContent {
             JetpackComposeAuthenticationTheme {
-                EmailContentList(modifier = Modifier.fillMaxSize(), emails = emails) {
+                EmailContentList(
+                    modifier = Modifier.fillMaxSize(),
+                    emails = emails
+                ) {
                 }
             }
         }
@@ -62,7 +61,14 @@ class EmailContentListTest {
     fun validateThatSwipeActionIsLessThanThresholdThenNoActionIsTaken() {
         composeRule.setContent {
             JetpackComposeAuthenticationTheme {
-                EmailContentList(modifier = Modifier.fillMaxSize(), emails = emails) {
+                EmailContentList(
+                    modifier = Modifier.fillMaxSize(),
+                    emails = emails,
+                    dismissBoxState = rememberSwipeToDismissBoxState(
+                        SwipeToDismissBoxValue.Settled,
+                        confirmValueChange = {false}
+                    )
+                ) {
                 }
             }
         }
@@ -90,7 +96,15 @@ class EmailContentListTest {
         var isDeleted = false
         composeRule.setContent {
             JetpackComposeAuthenticationTheme {
-                EmailContentList(modifier = Modifier.fillMaxSize(), emails = emails) {
+                EmailContentList(
+                    modifier = Modifier.fillMaxSize(),
+                    emails = emails,
+                    dismissBoxState = rememberSwipeToDismissBoxState(
+                        initialValue = SwipeToDismissBoxValue.StartToEnd,
+                        confirmValueChange = {true},
+                        positionalThreshold = {0F}
+                    )
+                ) {
                     isDeleted = true
                 }
             }
@@ -100,7 +114,11 @@ class EmailContentListTest {
                 onNodeWithTag(TAG_CONTENT).onChildAt(index).performScrollTo().performTouchInput {
                     // Swipe partially under the threshold to 40% of the horizontal distance
                     // See https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:wear/compose/compose-foundation/src/androidTest/kotlin/androidx/wear/compose/foundation/BasicSwipeToDismissBoxTest.kt;l=136-146?q=SwipeToDismissBoxTest
-                    swipeRight()
+                    swipeWithVelocity(
+                        start = Offset(0f, centerY /2),
+                        end = Offset(width.toFloat(), centerY),
+                        endVelocity = 1.0f
+                    )
                 }
                 MatcherAssert.assertThat(isDeleted, Matchers.equalTo(true))
             }

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.manoflogan.email.R
 import com.manoflogan.email.data.Email
+import com.manoflogan.email.data.InboxEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +33,7 @@ fun EmailContent(
     modifier: Modifier = Modifier,
     height: Dp,
     email: Email,
-    onAccessibilityDelete: () -> Unit,
+    onAccessibilityDelete: (InboxEvent) -> Unit,
     dismissState: SwipeToDismissBoxState
 ) {
     SwipeToDismissBox(
@@ -49,7 +50,7 @@ fun EmailContent(
                     .semantics {
                         customActions = listOf(
                             CustomAccessibilityAction(label = deleteAsString) {
-                                onAccessibilityDelete.invoke()
+                                onAccessibilityDelete(InboxEvent.DeleteEvent(email.id))
                                 true
                             }
                         )

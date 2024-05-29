@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.manoflogan.email.data.InboxEvent
 import com.manoflogan.email.data.InboxStatus
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailInbox(
     modifier: Modifier = Modifier,
@@ -24,7 +25,8 @@ fun EmailInbox(
                 LoadingStatus(modifier = Modifier.fillMaxSize())
             }
             inboxStatus is InboxStatus.HasEmails -> {
-                EmailContentList(modifier = Modifier.fillMaxSize(), emails = inboxStatus.emails,
+                EmailContentList(
+                    modifier = Modifier.fillMaxSize(), emails = inboxStatus.emails,
                     onInboxEvent = onInboxEvent
                 )
             }
