@@ -1,0 +1,10 @@
+<resources>
+    <string name = "app_name">email</string>
+    <string name = "inbox_title">Inbox (%d)</string>
+    <string name = "inbox_loading">Inbox</string>
+    <string name = "inbox_error">There was an error loading the content.</string>
+    <string name = "inbox_retry">Retry Again</string>
+    <string name = "inbox_empty">Nothing to see here yet"</string>
+    <string name = "inbox_check">Check again</string>
+    <string name = "inbox_delete">Delete Email</string>
+</resources>

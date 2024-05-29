@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="stroke_width">2dp</dimen>
+    <dimen name="scaffold_padding">8dp</dimen>
+    <dimen name="email_padding_half">8dp</dimen>
+    <dimen name="email_padding">16dp</dimen>
+</resources>
