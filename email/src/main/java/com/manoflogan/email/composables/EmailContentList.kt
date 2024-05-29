@@ -33,15 +33,15 @@ const val TAG_CONTENT = "content"
 fun EmailContentList(
     modifier: Modifier = Modifier,
     emails: List<Email>,
-    dismissBoxState: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        positionalThreshold = { distance ->
-            distance * .25f
-        }
-    ),
     onInboxEvent: (InboxEvent) -> Unit
 ) {
     LazyColumn(modifier = modifier.testTag(TAG_CONTENT)) {
         items(emails, key = {item -> item.id }) { email ->
+            val dismissBoxState = rememberSwipeToDismissBoxState(
+                positionalThreshold = { distance ->
+                    distance * .25f
+                }
+            )
             var isEmailDeleted by remember {
                 mutableStateOf(false)
             }

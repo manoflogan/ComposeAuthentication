@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -26,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import com.manoflogan.email.R
 import com.manoflogan.email.data.Email
 import com.manoflogan.email.data.InboxEvent
+
+const val SWIPE_DISMISS_TAG = "swipeTag"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +49,7 @@ fun EmailContent(
             SwipeDismissBox(
                 modifier = Modifier
                     .defaultMinSize(minHeight = height)
-                    .fillMaxWidth()
+                    .fillMaxWidth().testTag(SWIPE_DISMISS_TAG)
                     .semantics {
                         customActions = listOf(
                             CustomAccessibilityAction(label = deleteAsString) {
