@@ -1,14 +1,11 @@
 package com.manoflogan.email.composables
 
-import android.app.Instrumentation
-import android.service.autofill.FieldClassification.Match
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsActions.CustomActions
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.getOrNull
@@ -17,19 +14,14 @@ import androidx.compose.ui.test.SemanticsSelector
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onChildAt
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeRight
-import androidx.compose.ui.test.swipeWithVelocity
-import androidx.compose.ui.unit.dp
 import androidx.test.platform.app.InstrumentationRegistry
 import com.manoflogan.email.R
 import com.manoflogan.email.data.Email
 import com.manoflogan.email.ui.theme.JetpackComposeAuthenticationTheme
-import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Before
@@ -67,7 +59,6 @@ class EmailContentTest {
             JetpackComposeAuthenticationTheme {
                 EmailContent(
                     modifier = Modifier.fillMaxWidth(),
-                    height = 120.dp,
                     email = email,
                     onAccessibilityDelete = { },
                     dismissState = swipeToDismissState
@@ -90,7 +81,6 @@ class EmailContentTest {
             JetpackComposeAuthenticationTheme {
                 EmailContent(
                     modifier = Modifier.fillMaxWidth(),
-                    height = 120.dp,
                     email = email,
                     onAccessibilityDelete = {
                     },
@@ -119,7 +109,6 @@ class EmailContentTest {
             JetpackComposeAuthenticationTheme {
                 EmailContent(
                     modifier = Modifier.fillMaxWidth(),
-                    height = 120.dp,
                     email = email,
                     onAccessibilityDelete = {
                         isDeleted = true
@@ -153,7 +142,7 @@ class EmailContentTest {
         val actions = node.config.getOrNull(CustomActions)!!
         val matchingActions = actions.filter { labelPredicate(it.label) }
         if (matchingActions.isEmpty()) {
-            throw AssertionError("No custom accessibility actions matched [$predicateDescription].",)
+            throw AssertionError("No custom accessibility actions matched [$predicateDescription].")
         } else if (matchingActions.size > 1) {
             throw AssertionError(
                 "Expected exactly one custom accessibility action to match" +

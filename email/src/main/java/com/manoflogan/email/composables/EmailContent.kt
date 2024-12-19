@@ -2,6 +2,7 @@ package com.manoflogan.email.composables
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,7 +35,6 @@ const val SWIPE_DISMISS_TAG = "swipeTag"
 @Composable
 fun EmailContent(
     modifier: Modifier = Modifier,
-    height: Dp,
     email: Email,
     onAccessibilityDelete: (InboxEvent) -> Unit,
     dismissState: SwipeToDismissBoxState
@@ -48,8 +48,8 @@ fun EmailContent(
             val deleteAsString = stringResource(id = R.string.inbox_delete)
             SwipeDismissBox(
                 modifier = Modifier
-                    .defaultMinSize(minHeight = height)
-                    .fillMaxWidth().testTag(SWIPE_DISMISS_TAG)
+                    .testTag(SWIPE_DISMISS_TAG)
+                    .fillMaxSize()
                     .semantics {
                         customActions = listOf(
                             CustomAccessibilityAction(label = deleteAsString) {
