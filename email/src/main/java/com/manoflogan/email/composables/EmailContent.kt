@@ -1,9 +1,18 @@
 package com.manoflogan.email.composables
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +24,10 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -24,12 +36,82 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.manoflogan.email.R
 import com.manoflogan.email.data.Email
 import com.manoflogan.email.data.InboxEvent
+import kotlin.math.roundToInt
 
 const val SWIPE_DISMISS_TAG = "swipeTag"
+
+enum class DragAnchors(val fraction: Float) {
+    Start(0f),
+    Half(.5f),
+    End(1f),
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun EmailContentDrag(
+    email: Email, onAccessibilityDelete: (InboxEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val localDensity = LocalDensity.current
+    val halfScreenWidthPx = with(LocalDensity.current) {
+        LocalConfiguration.current.screenWidthDp.dp.toPx() / 2f
+    }
+    val anchoredDraggableState = remember {
+        AnchoredDraggableState(
+            initialValue = DragAnchors.Start,
+            anchors =  DraggableAnchors {
+                DragAnchors.entries.map {
+                    it to it.fraction
+                }
+            },
+            positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
+            velocityThreshold = {
+                with(localDensity) { 100.dp.toPx() }
+            },
+            snapAnimationSpec = tween(),
+            decayAnimationSpec = exponentialDecay()
+        )
+    }
+    val deleteAsString = stringResource(id = R.string.inbox_delete)
+    Box(modifier = modifier.offset {
+        IntOffset(
+            x = anchoredDraggableState
+                .requireOffset()
+                .roundToInt(),
+            y = 0
+        )
+    }.anchoredDraggable(anchoredDraggableState, Orientation.Horizontal)
+        .semantics {
+        customActions = listOf(
+            CustomAccessibilityAction(label = deleteAsString) {
+                onAccessibilityDelete(InboxEvent.DeleteEvent(email.id))
+                true
+            }
+        )
+    }
+    ) {
+        Card(modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation()
+        ) {
+            ListItem(
+                modifier = Modifier.fillMaxWidth(),
+                headlineContent = {
+                    Text(text = email.title, style = MaterialTheme.typography.headlineSmall)
+                },
+                supportingContent = {
+                    Text(text = email.description, style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2, overflow = TextOverflow.Ellipsis
+                    )
+                }
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -65,17 +65,14 @@ fun EmailContentList(
                     shrinkTowards = Alignment.Top
                 ) + fadeOut()
             ) {
-                EmailContent(
+                EmailContentDrag(
                     modifier = Modifier
                         .padding(dimensionResource(id = R.dimen.email_padding_half))
                         .fillMaxWidth(),
                     email = email,
-                    onAccessibilityDelete = onInboxEvent,
-                    dismissState = dismissBoxState
+                    onAccessibilityDelete = onInboxEvent
                 )
             }
-            }
-
-
+        }
     }
 }
