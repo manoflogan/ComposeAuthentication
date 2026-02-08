@@ -22,8 +22,10 @@ import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -49,7 +51,7 @@ enum class DragAnchors(val fraction: Float) {
     End(1f),
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EmailContentDrag(
     email: Email, onAccessibilityDelete: (InboxEvent) -> Unit, modifier: Modifier = Modifier
@@ -59,8 +61,19 @@ fun EmailContentDrag(
     val screenWidthPx = with(localDensity) {
         LocalConfiguration.current.screenWidthDp.dp.toPx()
     }
+    val positionalThreshold = { distance: Float -> distance * 0.5f }
+    val velocityThreshold = { with(localDensity) { 100.dp.toPx() } }
+    val animationSpec = tween<Float>()
+    val decayAnimationSpec = exponentialDecay<Float>()
 
-    val anchoredDraggableState = remember {
+    val anchoredDraggableState = rememberSaveable(
+        saver = AnchoredDraggableState.Saver(
+            snapAnimationSpec = animationSpec,
+            decayAnimationSpec = decayAnimationSpec,
+            positionalThreshold = positionalThreshold,
+            velocityThreshold = velocityThreshold
+        )
+    ) {
         AnchoredDraggableState(
             initialValue = DragAnchors.Start,
             anchors = DraggableAnchors {
@@ -68,28 +81,50 @@ fun EmailContentDrag(
                 DragAnchors.Half at (screenWidthPx * DragAnchors.Half.fraction)
                 DragAnchors.End at screenWidthPx * DragAnchors.End.fraction
             },
-            positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
-            velocityThreshold = {
-                with(localDensity) { 100.dp.toPx() }
-            },
-            snapAnimationSpec = tween(),
-            decayAnimationSpec = exponentialDecay()
+            positionalThreshold = positionalThreshold,
+            velocityThreshold = velocityThreshold,
+            snapAnimationSpec = animationSpec,
+            decayAnimationSpec = decayAnimationSpec
         )
     }
+
+    SideEffect {
+        anchoredDraggableState.updateAnchors(
+            DraggableAnchors {
+                DragAnchors.Start at DragAnchors.Start.fraction
+                DragAnchors.Half at (screenWidthPx * DragAnchors.Half.fraction)
+                DragAnchors.End at screenWidthPx * DragAnchors.End.fraction
+            }
+        )
+    }
+
+    LaunchedEffect(anchoredDraggableState.currentValue) {
+        if (anchoredDraggableState.currentValue == DragAnchors.End) {
+            onAccessibilityDelete(InboxEvent.DeleteEvent(email.id))
+        }
+    }
+
     val deleteAsString = stringResource(id = R.string.inbox_delete)
 
     // The Box acts as the container/background
     Box(modifier = modifier.fillMaxWidth()) {
+        // Show background only when not at Start or End
+        if (anchoredDraggableState.currentValue != DragAnchors.Start &&
+            anchoredDraggableState.currentValue != DragAnchors.End) {
+            SwipeDismissBox(
+                modifier = Modifier.matchParentSize(),
+                targetValue = SwipeToDismissBoxValue.StartToEnd
+            )
+        }
 
         // The Card is the foreground that slides
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset {
+                    val currentOffset = anchoredDraggableState.offset
                     IntOffset(
-                        x = anchoredDraggableState
-                            .requireOffset()
-                            .roundToInt(),
+                        x = if (currentOffset.isNaN()) 0 else currentOffset.roundToInt(),
                         y = 0
                     )
                 }
@@ -108,10 +143,17 @@ fun EmailContentDrag(
             ListItem(
                 modifier = Modifier.fillMaxWidth(),
                 headlineContent = {
-                    Text(text = email.title, style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.primary,
+                        text = email.title,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
                 },
                 supportingContent = {
                     Text(
+                        color = MaterialTheme.colorScheme.primary,
                         text = email.description,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 2,
@@ -166,11 +208,21 @@ fun EmailContent(
             ListItem(
                 modifier = Modifier.fillMaxWidth(),
                 headlineContent = {
-                    Text(text = email.title, style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.primary,
+                        text = email.title,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
                 },
                 supportingContent = {
-                    Text(text = email.description, style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 2, overflow = TextOverflow.Ellipsis
+                    Text(
+                        color = MaterialTheme.colorScheme.primary,
+                        text = email.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             )
