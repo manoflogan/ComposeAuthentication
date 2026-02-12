@@ -35,6 +35,7 @@ fun SwipeDismissBox(
     val colour by animateColorAsState(
             when(targetValue) {
                 SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.error
+                SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.background
             },
         label = "dismiss_colour"
@@ -48,6 +49,7 @@ fun SwipeDismissBox(
         val iconColor by animateColorAsState(targetValue =
             when(targetValue) {
                 SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.onError
+                SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.onError
                 else -> MaterialTheme.colorScheme.onSurface
             },
             animationSpec = tween(),
@@ -56,6 +58,7 @@ fun SwipeDismissBox(
         val iconSize by animateFloatAsState(targetValue =
             when(targetValue) {
                 SwipeToDismissBoxValue.StartToEnd -> 2f
+                SwipeToDismissBoxValue.EndToStart -> 2f
                 else -> 1f
             },
             animationSpec = tween(),
@@ -64,7 +67,7 @@ fun SwipeDismissBox(
 
         Icon(
             modifier = Modifier
-                .align(Alignment.CenterStart)
+                .align(if (targetValue == SwipeToDismissBoxValue.EndToStart) Alignment.CenterEnd else Alignment.CenterStart)
                 .scale(iconSize)
                 .testTag(SwipeDismissBoxTags.TAG)
                 .semantics {
